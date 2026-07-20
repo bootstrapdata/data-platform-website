@@ -1,38 +1,90 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0B0713" />
+    <meta name="theme-color" content="#060410" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbfaff" media="(prefers-color-scheme: light)" />
 
-    <title>Bootstrap Data — Own your first-party data. Govern it by default.</title>
+    <!-- Theme + JS bootstrap (runs before paint to avoid flash) -->
+    <script>
+      (function () {
+        try {
+          document.documentElement.classList.add('js');
+          var stored = localStorage.getItem('bd-theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.setAttribute('data-theme', stored);
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <title>Bootstrap Data — The control plane for customer data you can trust</title>
     <meta
       name="description"
-      content="Bootstrap Data is the privacy-first control plane for first-party customer data. Capture every signal, govern what flows, and activate it everywhere — governed, audited, and consent-aware by design."
+      content="Bootstrap Data is the governance-native control plane for first-party customer data. Model versioned contracts, PII/SPII policy, consent-aware destination mapping, and auditable configuration in one source model."
     />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://bootstrapdata.in/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Bootstrap Data" />
-    <meta property="og:title" content="Bootstrap Data — Own your first-party data. Govern it by default." />
+    <meta property="og:title" content="Bootstrap Data — The control plane for customer data you can trust" />
     <meta
       property="og:description"
-      content="The privacy-first control plane for first-party customer data. Governed. Audited. Consent-aware."
+      content="Governance-native control plane for first-party customer data. Model versioned contracts, sensitive-data policy, destination intent, and auditable configuration in one source model."
     />
     <meta property="og:url" content="https://bootstrapdata.in/" />
     <meta property="og:image" content="https://bootstrapdata.in/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Bootstrap Data — Governance-native control plane for first-party customer data"
+    />
 
-    <!-- Twitter -->
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bootstrap Data — Own your first-party data. Govern it by default." />
+    <meta name="twitter:title" content="Bootstrap Data — The control plane for customer data you can trust" />
     <meta
       name="twitter:description"
-      content="The privacy-first control plane for first-party customer data. Governed. Audited. Consent-aware."
+      content="Governance-native control plane for first-party customer data. Versioned contracts, PII/SPII policy, destination mapping, and configuration history."
     />
     <meta name="twitter:image" content="https://bootstrapdata.in/og-image.png" />
 
-    <link rel="canonical" href="https://bootstrapdata.in/" />
+    <!-- Sitemap -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- JSON-LD structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://bootstrapdata.in/#organization",
+            "name": "Bootstrap Data",
+            "url": "https://bootstrapdata.in/",
+            "description": "Governance-native control plane for first-party customer data.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "email": "hello@bootstrapdata.in",
+              "contactType": "customer enquiries"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://bootstrapdata.in/#website",
+            "url": "https://bootstrapdata.in/",
+            "name": "Bootstrap Data",
+            "publisher": { "@id": "https://bootstrapdata.in/#organization" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
