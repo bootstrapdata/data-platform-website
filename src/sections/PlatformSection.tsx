@@ -1,5 +1,6 @@
 import { Code2, Copy, History, ShieldCheck, ToggleRight, Zap } from 'lucide-react';
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 import type { IconType } from 'react-icons';
 import {
   SiAndroid,
@@ -99,7 +100,7 @@ function PlatformFlow({
     return () => mq.removeEventListener('change', apply);
   }, []);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const wrap = wrapRef.current;
     const node = nodeRef.current;
     if (!wrap || !node) return;

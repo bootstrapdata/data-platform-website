@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import { evalEvents, consentProfiles, evaluatePolicy } from '@/content/site';
-import type { DecisionVerdict } from '@/content/site';
-
-function verdictMod(v: DecisionVerdict): string {
-  return `verdict--${v.toLowerCase()}`;
-}
+import { evalEvents, consentProfiles, evaluatePolicy, verdictClass } from '@/content/site';
 
 export default function PolicyEvaluator() {
   const [eventId, setEventId] = useState('checkout_started');
@@ -66,14 +61,14 @@ export default function PolicyEvaluator() {
 
       {/* Result */}
       <div
-        className={`evaluator-result ${verdictMod(result.decision)}`}
+        className={`evaluator-result ${verdictClass(result.decision)}`}
         aria-live="polite"
         aria-label={`Decision outcome: ${result.decision}`}
       >
         <div className="evaluator-verdict-row">
           <span
             key={`${eventId}-${consentId}`}
-            className={`evaluator-verdict-badge ${verdictMod(result.decision)}`}
+            className={`evaluator-verdict-badge ${verdictClass(result.decision)}`}
           >
             {result.decision}
           </span>

@@ -9,6 +9,7 @@ export default function HowItWorks() {
 
   const [active, setActive] = useState(0);
   const [hovered, setHovered] = useState(false); // pointer over the stage card
+  const [focused, setFocused] = useState(false); // keyboard focus within the player
   const [inView, setInView] = useState(false);
   const [reduced, setReduced] = useState(false);
 
@@ -38,7 +39,7 @@ export default function HowItWorks() {
     return () => io.disconnect();
   }, []);
 
-  const autoplay = inView && !hovered && !reduced;
+  const autoplay = inView && !hovered && !focused && !reduced;
 
   function go(idx: number) {
     setActive(((idx % count) + count) % count);
@@ -81,14 +82,18 @@ export default function HowItWorks() {
           <p className="section-intro">{subhead}</p>
         </header>
 
-        <div className="hiw-player reveal">
+        <div
+          className="hiw-player reveal"
+          onFocusCapture={() => setFocused(true)}
+          onBlurCapture={() => setFocused(false)}
+        >
           {/* Stage viewport — auto-advancing "page", constant height (stacked deck) */}
           <div
             className="hiw-stage"
             id="hiw-panel"
             role="tabpanel"
+            tabIndex={0}
             aria-labelledby={`hiw-step-${stage.id}`}
-            aria-live="polite"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >

@@ -1,9 +1,4 @@
-import { decisionModel } from '@/content/site';
-import type { DecisionVerdict } from '@/content/site';
-
-function verdictMod(v: DecisionVerdict) {
-  return `verdict--${v.toLowerCase()}`;
-}
+import { decisionModel, verdictClass } from '@/content/site';
 
 export default function DecisionModel() {
   const { heading, intro, items } = decisionModel;
@@ -22,12 +17,12 @@ export default function DecisionModel() {
           {items.map((item) => (
             <article
               key={item.verdict}
-              className={`decision-card ${verdictMod(item.verdict)}`}
+              className={`decision-card ${verdictClass(item.verdict)}`}
               role="listitem"
               data-spotlight
             >
               <p
-                className={`decision-badge ${verdictMod(item.verdict)}`}
+                className={`decision-badge ${verdictClass(item.verdict)}`}
                 aria-label={`Decision: ${item.verdict}`}
               >
                 {item.verdict}

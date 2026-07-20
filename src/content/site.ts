@@ -21,6 +21,11 @@
 
 export type DecisionVerdict = 'ALLOW' | 'BLOCK' | 'OMIT';
 
+/** CSS modifier class for a verdict (shared by the decision cards and the evaluator). */
+export function verdictClass(v: DecisionVerdict): string {
+  return `verdict--${v.toLowerCase()}`;
+}
+
 export interface NavLink {
   readonly label: string;
   readonly href: string;
@@ -32,11 +37,12 @@ export interface NavLink {
 
 export const brand = {
   name: 'Bootstrap Data',
-  domain: 'bootstrapdata.in',
-  tagline: 'Governance-native control plane for first-party customer data.',
   email: 'contact@bootstrapdata.in',
   earlyAccessSubject: 'Bootstrap%20Data%20early%20access',
 } as const;
+
+/** Single source for the "Request early access" mailto used across the site. */
+export const earlyAccessHref = `mailto:${brand.email}?subject=${brand.earlyAccessSubject}`;
 
 // ---------------------------------------------------------------------------
 // Navigation
@@ -51,7 +57,7 @@ export const nav = {
   ] satisfies readonly NavLink[],
   cta: {
     label: 'Request early access',
-    href: `mailto:contact@bootstrapdata.in?subject=Bootstrap%20Data%20early%20access`,
+    href: earlyAccessHref,
   },
 } as const;
 
@@ -66,10 +72,9 @@ export const hero = {
   body: 'Bootstrap Data brings versioned contracts, sensitive-data policies, and consent mappings into one source configuration — giving teams a shared model for each downstream decision.',
   primary: {
     label: 'Request early access',
-    href: `mailto:contact@bootstrapdata.in?subject=Bootstrap%20Data%20early%20access`,
+    href: earlyAccessHref,
   },
   secondary: { label: 'Explore how it works', href: '#how-it-works' },
-  evaluatorCta: { label: 'Try the decision model', href: '#decision-model' },
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -372,7 +377,7 @@ export const ctaSection = {
     'Bootstrap Data is in early access. Capabilities are in active development and the initial cohort is limited.',
   primary: {
     label: 'Request early access',
-    href: `mailto:contact@bootstrapdata.in?subject=Bootstrap%20Data%20early%20access`,
+    href: earlyAccessHref,
   },
   secondary: { label: 'Explore how it works', href: '#how-it-works' },
   footnote: 'Tell us about your data stack and the governance problem you want to solve.',
@@ -391,7 +396,7 @@ export const footer = {
     { label: 'Use cases', href: '#use-cases' },
     {
       label: 'Request access',
-      href: `mailto:contact@bootstrapdata.in?subject=Bootstrap%20Data%20early%20access`,
+      href: earlyAccessHref,
     },
   ] satisfies readonly NavLink[],
   legal: `© ${new Date().getFullYear()} Bootstrap Data. All rights reserved.`,
