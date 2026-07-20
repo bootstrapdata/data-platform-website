@@ -1,0 +1,13 @@
+<svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bootstrap Data">
+  <defs>
+    <linearGradient id="bdFav" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bdFav)"/>
+  <g fill="#FFFFFF">
+    <ellipse cx="32" cy="22" rx="15" ry="6"/>
+    <path d="M17 22v12c0 3.31 6.72 6 15 6s15-2.69 15-6V22c0 3.31-6.72 6-15 6s-15-2.69-15-6Z" opacity="0.72"/>
+  </g>
+</svg>

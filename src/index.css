@@ -1,0 +1,52 @@
+/**
+ * Bootstrap Data website — global stylesheet.
+ *
+ * The design tokens, @theme mapping and base layer all live in the shared
+ * design-system (`@bootstrapdata/design-system/theme.css`). This app owns the
+ * Tailwind entry point and tells Tailwind where to scan for class names.
+ */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@bootstrapdata/design-system/theme.css';
+
+/* Scan the app sources and the pre-built design-system for utility classes. */
+@source '.';
+@source '../node_modules/@bootstrapdata/design-system/dist';
+
+/* ------------------------------------------------------------------ *
+ * Marketing-site surface tokens (dark, on-brand). These extend — never
+ * replace — the design-system palette; brand hue 277 (indigo/violet).
+ * ------------------------------------------------------------------ */
+:root {
+  --site-bg: oklch(0.13 0.02 277);
+  --site-bg-2: oklch(0.15 0.025 277);
+  --site-panel: oklch(1 0 0 / 4%);
+  --site-border: oklch(1 0 0 / 10%);
+  --site-cyan: oklch(0.78 0.13 205);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--site-bg);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
