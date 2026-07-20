@@ -86,11 +86,20 @@ export default function PolicyEvaluator() {
           )}
         </div>
 
-        {result.omittedFields.length > 0 && (
-          <p className="evaluator-omitted">
-            <span>Omitted fields:</span> <code>{result.omittedFields.join(', ')}</code>
-          </p>
-        )}
+        <p
+          className={`evaluator-omitted${
+            result.omittedFields.length === 0 ? ' evaluator-omitted--empty' : ''
+          }`}
+          aria-hidden={result.omittedFields.length === 0}
+        >
+          {result.omittedFields.length > 0 ? (
+            <>
+              <span>Omitted fields:</span> <code>{result.omittedFields.join(', ')}</code>
+            </>
+          ) : (
+            <span aria-hidden="true">&nbsp;</span>
+          )}
+        </p>
 
         <div className="evaluator-trace" aria-label="Decision trace">
           <pre>

@@ -1158,6 +1158,10 @@ body::after {
   font-family: var(--font-mono, monospace);
 }
 
+.evaluator-omitted--empty {
+  visibility: hidden;
+}
+
 .evaluator-omitted code {
   font-family: inherit;
 }
@@ -1171,6 +1175,7 @@ body::after {
 
 .evaluator-trace pre {
   margin: 0;
+  min-height: calc(7 * 1lh);
   white-space: pre-wrap;
   word-break: break-all;
 }
