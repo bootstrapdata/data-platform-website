@@ -29,7 +29,7 @@
   /* Text */
   --site-text: #f0ebff;
   --site-text-2: #c4b5d4;
-  --site-muted: #7b6e9e;
+  --site-muted: #8578a8;
 
   /* Brand */
   --site-brand: #a855f7;
@@ -607,8 +607,8 @@ body::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   flex-shrink: 0;
   background: transparent;
   border: 1px solid var(--site-border);
@@ -665,8 +665,8 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   background: transparent;
   border: 1px solid var(--site-border);
   border-radius: 0.5rem;
