@@ -38,6 +38,11 @@ export default function DecisionModel() {
             </article>
           ))}
         </div>
+
+        <p className="decision-callout reveal">
+          These verdicts aren’t static docs —{' '}
+          <a href="#hero-heading">try them live in the policy evaluator above.</a>
+        </p>
       </div>
     </section>
   );

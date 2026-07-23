@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { evalEvents, consentProfiles, evaluatePolicy, verdictClass } from '@/content/site';
 
 export default function PolicyEvaluator() {
@@ -116,6 +117,11 @@ export default function PolicyEvaluator() {
           ))}
         </p>
       </div>
+
+      <a className="evaluator-link" href="#decision-model">
+        See how every verdict is defined
+        <ChevronDown aria-hidden="true" size={14} />
+      </a>
     </div>
   );
 }

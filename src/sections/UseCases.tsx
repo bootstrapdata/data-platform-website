@@ -5,15 +5,19 @@ const ICON_MAP = { BarChart3, Code2, Lock } as const;
 type IconName = keyof typeof ICON_MAP;
 
 export default function UseCases() {
-  const { heading, items } = useCases;
+  const { eyebrow, heading, intro, items } = useCases;
 
   return (
     <section className="section use-cases-section" id="use-cases" aria-labelledby="use-cases-heading">
       <div className="site-container">
-        <header className="section-header reveal">
-          <h2 id="use-cases-heading" className="section-heading section-heading--centered">
-            {heading}
-          </h2>
+        <header className="section-header section-header--split reveal">
+          <div className="section-header__lead">
+            <span className="section-eyebrow">{eyebrow}</span>
+            <h2 id="use-cases-heading" className="section-heading">
+              {heading}
+            </h2>
+          </div>
+          <p className="section-intro">{intro}</p>
         </header>
 
         <div className="use-cases-grid reveal-group">

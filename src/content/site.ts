@@ -78,6 +78,49 @@ export const hero = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// Trust strip — factual capability pillars shown directly under the hero.
+// SAFE ASSERTIONS ONLY (see file header): no certifications, customers, or
+// runtime-enforcement claims. Each pillar maps to a modeled, reviewable feature.
+// ---------------------------------------------------------------------------
+
+export interface TrustPillar {
+  readonly id: string;
+  readonly icon: 'GitBranch' | 'ShieldCheck' | 'Waypoints' | 'History';
+  readonly title: string;
+  readonly text: string;
+}
+
+export const trustStrip = {
+  label: 'Trust modeled into the source of truth — not bolted on afterward',
+  pillars: [
+    {
+      id: 'versioned-contracts',
+      icon: 'GitBranch',
+      title: 'Versioned contracts',
+      text: 'Every event type has an explicit, reviewable contract.',
+    },
+    {
+      id: 'sensitive-policy',
+      icon: 'ShieldCheck',
+      title: 'PII / SPII policy',
+      text: 'Sensitive fields are classified and modeled, not guessed.',
+    },
+    {
+      id: 'consent-routing',
+      icon: 'Waypoints',
+      title: 'Consent-aware routing',
+      text: 'Consent categories map to destinations in one model.',
+    },
+    {
+      id: 'audit-history',
+      icon: 'History',
+      title: 'Permissioned history',
+      text: 'Configuration changes are auditable and attributable.',
+    },
+  ] satisfies readonly TrustPillar[],
+} as const;
+
+// ---------------------------------------------------------------------------
 // Business narrative (problem → solution)
 // ---------------------------------------------------------------------------
 
@@ -326,7 +369,10 @@ export const platform = {
 // ---------------------------------------------------------------------------
 
 export const useCases = {
+  eyebrow: 'Who it’s for',
   heading: 'One control plane. Every team that touches data.',
+  intro:
+    'The same governed model reads differently depending on where you sit — but it stays a single source of truth for all of them.',
   items: [
     {
       id: 'platform-eng',

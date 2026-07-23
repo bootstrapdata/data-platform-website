@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { brand, nav } from '@/content/site';
 import logoMark from '@bootstrapdata/design-system/assets/logo-mark.svg';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useScrollSpy } from '@/lib/useScrollSpy';
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const sectionIds = useMemo(() => nav.links.map((link) => link.href.replace(/^#/, '')), []);
+  const activeId = useScrollSpy(sectionIds);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -45,13 +49,20 @@ export default function SiteHeader() {
         {/* Desktop nav */}
         <nav className="site-nav" aria-label="Primary navigation">
           <ul className="site-nav__list" role="list">
-            {nav.links.map((link) => (
-              <li key={link.href}>
-                <a href={link.href} className="site-nav__link">
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {nav.links.map((link) => {
+              const isActive = link.href === `#${activeId}`;
+              return (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="site-nav__link"
+                    aria-current={isActive ? 'true' : undefined}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 

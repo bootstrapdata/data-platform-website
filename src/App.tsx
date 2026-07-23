@@ -1,6 +1,7 @@
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import HeroSection from '@/sections/HeroSection';
+import TrustStrip from '@/sections/TrustStrip';
 import BusinessCase from '@/sections/BusinessCase';
 import DecisionModel from '@/sections/DecisionModel';
 import HowItWorks from '@/sections/HowItWorks';
@@ -28,6 +29,7 @@ export default function App() {
 
       <main id="main-content" tabIndex={-1}>
         <HeroSection />
+        <TrustStrip />
         <BusinessCase />
         <DecisionModel />
         <HowItWorks />

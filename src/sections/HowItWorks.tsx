@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Play, Pause } from 'lucide-react';
 import { howItWorks } from '@/content/site';
 
 const DWELL_MS = 6000;
@@ -10,6 +11,7 @@ export default function HowItWorks() {
   const [active, setActive] = useState(0);
   const [hovered, setHovered] = useState(false); // pointer over the stage card
   const [focused, setFocused] = useState(false); // keyboard focus within the player
+  const [paused, setPaused] = useState(false); // explicit pause (touch / control)
   const [inView, setInView] = useState(false);
   const [reduced, setReduced] = useState(false);
 
@@ -39,7 +41,7 @@ export default function HowItWorks() {
     return () => io.disconnect();
   }, []);
 
-  const autoplay = inView && !hovered && !focused && !reduced;
+  const autoplay = inView && !hovered && !focused && !reduced && !paused;
 
   function go(idx: number) {
     setActive(((idx % count) + count) % count);
@@ -96,6 +98,7 @@ export default function HowItWorks() {
             aria-labelledby={`hiw-step-${stage.id}`}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
+            onTouchStart={() => setPaused(true)}
           >
             <div className="hiw-stage__deck">
               {stages.map((s, i) => (
@@ -176,6 +179,21 @@ export default function HowItWorks() {
               </button>
             ))}
           </div>
+
+          {!reduced && (
+            <div className="hiw-controls">
+              <button
+                type="button"
+                className="hiw-playpause"
+                aria-pressed={paused}
+                aria-label={paused ? 'Resume auto-advance' : 'Pause auto-advance'}
+                onClick={() => setPaused((p) => !p)}
+              >
+                {paused ? <Play aria-hidden="true" size={14} /> : <Pause aria-hidden="true" size={14} />}
+                <span>{paused ? 'Play' : 'Pause'}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
