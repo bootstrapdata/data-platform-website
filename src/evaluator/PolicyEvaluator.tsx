@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Zap } from 'lucide-react';
 import { evalEvents, consentProfiles, evaluatePolicy, verdictClass } from '@/content/site';
+import { useTypewriter } from '@/lib/useTypewriter';
+
+/** A combo that deterministically resolves to BLOCK — used by "Try a risky event". */
+const RISKY = { eventId: 'ad_attributed', consentId: 'none' } as const;
 
 export default function PolicyEvaluator() {
   const [eventId, setEventId] = useState('checkout_started');
@@ -8,12 +12,31 @@ export default function PolicyEvaluator() {
 
   const result = evaluatePolicy(eventId, consentId);
   const selectedEvent = evalEvents.find((e) => e.id === eventId) ?? evalEvents[0];
+  const { shown: traceShown, typing } = useTypewriter(result.trace);
+
+  const isRiskyActive = eventId === RISKY.eventId && consentId === RISKY.consentId;
+
+  function tryRisky() {
+    setEventId(RISKY.eventId);
+    setConsentId(RISKY.consentId);
+  }
 
   return (
     <div className="evaluator-panel" aria-label="Illustrative policy model">
-      <p className="evaluator-disclosure">
-        Illustrative policy model — deterministic browser demo, not live product telemetry.
-      </p>
+      <div className="evaluator-topbar">
+        <p className="evaluator-disclosure">
+          Illustrative policy model — deterministic browser demo, not live product telemetry.
+        </p>
+        <button
+          type="button"
+          className="evaluator-risky"
+          aria-pressed={isRiskyActive}
+          onClick={tryRisky}
+        >
+          <Zap aria-hidden="true" size={13} />
+          Try a risky event
+        </button>
+      </div>
 
       {/* Event selector */}
       <div className="evaluator-field">
@@ -61,12 +84,13 @@ export default function PolicyEvaluator() {
       </div>
 
       {/* Result */}
-      <div
-        className={`evaluator-result ${verdictClass(result.decision)}`}
-        aria-live="polite"
-        aria-label={`Decision outcome: ${result.decision}`}
-      >
-        <div className="evaluator-verdict-row">
+      <div className={`evaluator-result ${verdictClass(result.decision)}`}>
+        <div
+          className="evaluator-verdict-row"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label={`Decision outcome: ${result.decision}`}
+        >
           <span
             key={`${eventId}-${consentId}`}
             className={`evaluator-verdict-badge ${verdictClass(result.decision)}`}
@@ -74,7 +98,21 @@ export default function PolicyEvaluator() {
             {result.decision}
           </span>
           {result.destinations.length > 0 ? (
-            <span className="evaluator-destinations">→ {result.destinations.join(', ')}</span>
+            <ul
+              key={`dest-${eventId}-${consentId}`}
+              className="evaluator-dests"
+              aria-label="Forwarded to destinations"
+            >
+              {result.destinations.map((d, i) => (
+                <li
+                  key={d}
+                  className="evaluator-dest-chip"
+                  style={{ '--i': i } as React.CSSProperties}
+                >
+                  {d}
+                </li>
+              ))}
+            </ul>
           ) : (
             <span className="evaluator-destinations evaluator-destinations--blocked">
               No destinations — event blocked
@@ -97,19 +135,23 @@ export default function PolicyEvaluator() {
           )}
         </p>
 
-        <div className="evaluator-trace" aria-label="Decision trace">
+        <div className="evaluator-trace" aria-label="Decision trace" aria-live="off">
           <pre>
-            <code>{result.trace}</code>
+            <code>
+              {traceShown}
+              {typing && <span className="evaluator-caret" aria-hidden="true" />}
+            </code>
           </pre>
         </div>
 
         <p className="evaluator-event-fields" aria-label="Inspected fields">
-          {Object.entries(selectedEvent.fields).map(([k, v]) => (
+          {Object.entries(selectedEvent.fields).map(([k, v], i) => (
             <span
-              key={k}
+              key={`${eventId}-${k}`}
               className={`evaluator-field-chip ${
                 result.omittedFields.includes(k) ? 'evaluator-field-chip--omitted' : ''
               }`}
+              style={{ '--i': i } as React.CSSProperties}
             >
               <code>{k}</code>
               <span>{v}</span>

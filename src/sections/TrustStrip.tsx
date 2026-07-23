@@ -5,8 +5,11 @@ const icons: Record<string, LucideIcon> = { GitBranch, ShieldCheck, Waypoints, H
 
 export default function TrustStrip() {
   return (
-    <section className="trust-strip" aria-label="Trust foundations">
+    <section className="trust-strip" aria-labelledby="trust-strip-heading">
       <div className="site-container">
+        <h2 id="trust-strip-heading" className="sr-only">
+          Trust foundations
+        </h2>
         <p className="trust-strip__label">{trustStrip.label}</p>
         <ul className="trust-strip__grid reveal-group" role="list">
           {trustStrip.pillars.map((pillar) => {

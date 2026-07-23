@@ -93,13 +93,17 @@ export default function SiteHeader() {
         id="mobile-nav"
         className={`site-mobile-nav${menuOpen ? ' site-mobile-nav--open' : ''}`}
         aria-hidden={!menuOpen}
-        aria-label="Mobile navigation"
       >
-        <nav>
+        <nav aria-label="Mobile navigation">
           <ul className="site-mobile-nav__list" role="list">
             {nav.links.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="site-mobile-nav__link" onClick={closeMenu}>
+                <a
+                  href={link.href}
+                  className="site-mobile-nav__link"
+                  aria-current={link.href === `#${activeId}` ? 'true' : undefined}
+                  onClick={closeMenu}
+                >
                   {link.label}
                 </a>
               </li>

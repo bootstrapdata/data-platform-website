@@ -50,8 +50,8 @@ export const earlyAccessHref = `mailto:${brand.email}?subject=${brand.earlyAcces
 
 export const nav = {
   links: [
-    { label: 'How it works', href: '#how-it-works' },
     { label: 'Decision model', href: '#decision-model' },
+    { label: 'How it works', href: '#how-it-works' },
     { label: 'Platform', href: '#platform' },
     { label: 'Use cases', href: '#use-cases' },
   ] satisfies readonly NavLink[],
@@ -430,18 +430,59 @@ export const ctaSection = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// Event journey — scroll-cinematic spike data (illustrative)
+// ---------------------------------------------------------------------------
+
+export interface JourneyField {
+  readonly key: string;
+  readonly value: string;
+  readonly sensitive?: boolean;
+}
+
+export interface JourneyGate {
+  readonly id: string;
+  readonly label: string;
+  readonly caption: string;
+}
+
+export const eventJourney = {
+  eyebrow: 'Live walk-through',
+  heading: 'One event, through the whole control plane.',
+  subhead:
+    'Scroll to watch a single checkout_started event get contracted, classified, consent-checked, and routed — one field gets minimized on the way.',
+  event: {
+    label: 'checkout_started',
+    fields: [
+      { key: 'event', value: 'checkout_started' },
+      { key: 'cart_value', value: '149.00' },
+      { key: 'currency', value: 'USD' },
+      { key: 'user_email', value: 'u@example.com', sensitive: true },
+    ] satisfies readonly JourneyField[],
+  },
+  gates: [
+    { id: 'contract', label: 'Contract', caption: 'Validated against a versioned schema' },
+    { id: 'policy', label: 'PII / SPII policy', caption: 'Sensitive fields classified & minimized' },
+    { id: 'consent', label: 'Consent', caption: 'Checked against granted categories' },
+    { id: 'destinations', label: 'Destinations', caption: 'Governed payload routed downstream' },
+  ] satisfies readonly JourneyGate[],
+  verdict: 'OMIT' as DecisionVerdict,
+  omitted: 'user_email',
+  destinations: ['warehouse', 'analytics'] as const,
+} as const;
+
+// ---------------------------------------------------------------------------
 // Footer
 // ---------------------------------------------------------------------------
 
 export const footer = {
   tagline: 'Governance-native control plane for first-party customer data.',
   links: [
-    { label: 'How it works', href: '#how-it-works' },
     { label: 'Decision model', href: '#decision-model' },
+    { label: 'How it works', href: '#how-it-works' },
     { label: 'Platform', href: '#platform' },
     { label: 'Use cases', href: '#use-cases' },
     {
-      label: 'Request access',
+      label: 'Request early access',
       href: earlyAccessHref,
     },
   ] satisfies readonly NavLink[],

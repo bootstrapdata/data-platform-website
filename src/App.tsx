@@ -4,6 +4,7 @@ import HeroSection from '@/sections/HeroSection';
 import TrustStrip from '@/sections/TrustStrip';
 import BusinessCase from '@/sections/BusinessCase';
 import DecisionModel from '@/sections/DecisionModel';
+import EventJourney from '@/sections/EventJourney';
 import HowItWorks from '@/sections/HowItWorks';
 import PlatformSection from '@/sections/PlatformSection';
 import UseCases from '@/sections/UseCases';
@@ -32,6 +33,7 @@ export default function App() {
         <TrustStrip />
         <BusinessCase />
         <DecisionModel />
+        <EventJourney />
         <HowItWorks />
         <PlatformSection />
         <UseCases />
