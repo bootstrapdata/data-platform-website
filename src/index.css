@@ -471,7 +471,7 @@ body::after {
     background var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-base) var(--ease-out),
-    transform var(--duration-base) var(--ease-spring),
+    transform var(--duration-fast) var(--ease-out),
     color var(--duration-fast),
     opacity var(--duration-fast);
   min-height: 2.75rem;
@@ -482,7 +482,7 @@ body::after {
 }
 
 .btn:active {
-  transform: translateY(0);
+  transform: scale(0.97);
 }
 
 .btn svg {
@@ -652,7 +652,7 @@ body::after {
     color var(--duration-fast),
     border-color var(--duration-fast),
     background var(--duration-fast),
-    transform var(--duration-base) var(--ease-spring);
+    transform var(--duration-fast) var(--ease-out);
 }
 
 .theme-toggle:hover {
@@ -662,11 +662,11 @@ body::after {
 }
 
 .theme-toggle:active {
-  transform: scale(0.92);
+  transform: scale(0.96);
 }
 
 .theme-toggle svg {
-  transition: transform var(--duration-slow) var(--ease-spring);
+  transition: transform var(--duration-base) var(--ease-out);
 }
 
 .theme-toggle:hover svg {
