@@ -20,14 +20,18 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04-arm
+    # Route through the org-level Blacksmith runner variable, with a
+    # GitHub-hosted arm64 fallback — matches data-platform-core.
+    runs-on: ${{ vars.LIGHT_RUNNER || 'ubuntu-24.04-arm' }}
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -51,7 +55,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-24.04-arm
+    runs-on: ${{ vars.LIGHT_RUNNER || 'ubuntu-24.04-arm' }}
     timeout-minutes: 10
     environment:
       name: github-pages
