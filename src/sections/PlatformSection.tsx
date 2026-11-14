@@ -1,4 +1,16 @@
-import { Code2, Copy, History, ShieldCheck, ToggleRight, Zap } from 'lucide-react';
+import {
+  Activity,
+  Bot,
+  Check,
+  Database,
+  FileCode2,
+  Fingerprint,
+  Radio,
+  Send,
+  ShieldCheck,
+  UserX,
+  Wand2,
+} from 'lucide-react';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 import type { IconType } from 'react-icons';
@@ -14,19 +26,22 @@ import {
 } from 'react-icons/si';
 import { FaJava } from 'react-icons/fa';
 import { TbApi } from 'react-icons/tb';
-import { platform } from '@/content/site';
+import { platform, type ModuleIcon } from '@/content/site';
+import StatusBadge from '@/components/StatusBadge';
 import logoMark from '@bootstrapdata/design-system/assets/logo-mark.svg';
 
-const ICON_MAP = {
-  Code2,
-  Copy,
-  History,
+const ICON_MAP: Record<ModuleIcon, typeof Radio> = {
+  Radio,
   ShieldCheck,
-  ToggleRight,
-  Zap,
-} as const;
-
-type IconName = keyof typeof ICON_MAP;
+  Wand2,
+  Database,
+  Fingerprint,
+  Send,
+  Activity,
+  UserX,
+  Bot,
+  FileCode2,
+};
 
 // Brand logo + official-ish colour for each source / client technology.
 // Colours are chosen to read well against both the dark and light themes.
@@ -217,33 +232,45 @@ function PlatformFlow({
 }
 
 export default function PlatformSection() {
-  const { heading, subhead, capabilities, sources, clients } = platform;
+  const { eyebrow, heading, subhead, modules, sources, clients } = platform;
 
   return (
     <section className="section platform-section" id="platform" aria-labelledby="platform-heading">
       <div className="site-container">
         <header className="section-header reveal">
+          <span className="section-eyebrow">{eyebrow}</span>
           <h2 id="platform-heading" className="section-heading section-heading--centered">
             {heading}
           </h2>
           <p className="section-intro">{subhead}</p>
         </header>
 
-        {/* Capabilities grid */}
-        <div className="platform-grid reveal-group" role="list">
-          {capabilities.map((cap) => {
-            const Icon = ICON_MAP[cap.icon as IconName];
+        <ul className="module-grid reveal-group" role="list">
+          {modules.map((mod) => {
+            const Icon = ICON_MAP[mod.icon];
             return (
-              <div key={cap.id} className="platform-card" role="listitem" data-spotlight>
-                <div className="platform-card__icon" aria-hidden="true">
-                  <Icon size={20} />
+              <li key={mod.id} className="module-card" data-spotlight>
+                <div className="module-card__top">
+                  <span className="module-card__icon" aria-hidden="true">
+                    <Icon size={20} strokeWidth={1.75} />
+                  </span>
+                  <span className="module-card__stage">{mod.stage}</span>
+                  <StatusBadge status={mod.status} />
                 </div>
-                <h3 className="platform-card__label">{cap.label}</h3>
-                <p className="platform-card__detail">{cap.detail}</p>
-              </div>
+                <h3 className="module-card__title">{mod.title}</h3>
+                <p className="module-card__summary">{mod.summary}</p>
+                <ul className="module-card__points" role="list">
+                  {mod.points.map((pt) => (
+                    <li key={pt}>
+                      <Check aria-hidden="true" size={14} strokeWidth={2.5} />
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         {/* Hub: generated clients <- one contract <- every source */}
         <PlatformFlow sources={sources} clients={clients} />

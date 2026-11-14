@@ -84,11 +84,7 @@ export default function EventJourney() {
 
         // 2 — PII/SPII policy: minimize the sensitive field, stamp the verdict.
         tl.to(packet, { x: () => restX(1), duration: 1 });
-        tl.to(
-          emailChip,
-          { opacity: 0.35, backgroundColor: 'var(--site-omit-dim)', duration: 0.4 },
-          '<0.3',
-        );
+        tl.to(emailChip, { opacity: 0.35, backgroundColor: 'var(--site-omit-dim)', duration: 0.4 }, '<0.3');
         tl.to(omitTag, { autoAlpha: 1, duration: 0.3 }, '<');
         tl.to(verdictBadge, { autoAlpha: 1, duration: 0.3 }, '<');
 
@@ -147,9 +143,7 @@ export default function EventJourney() {
                       >
                         <code>{f.key}</code>
                         <span>{f.value}</span>
-                        {f.sensitive && (
-                          <span className="journey-omit-tag">OMITTED</span>
-                        )}
+                        {f.sensitive && <span className="journey-omit-tag">OMITTED</span>}
                       </li>
                     ))}
                   </ul>

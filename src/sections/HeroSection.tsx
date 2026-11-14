@@ -2,10 +2,9 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import { hero } from '@/content/site';
 import PolicyEvaluator from '@/evaluator/PolicyEvaluator';
 
-/** Wraps the phrase "control plane" in a gradient accent span, keeping the rest intact. */
-function renderHeadline(text: string) {
-  const accent = 'control plane';
-  const idx = text.toLowerCase().indexOf(accent);
+/** Wraps `accent` in a gradient span, keeping the rest of the headline intact. */
+function renderHeadline(text: string, accent: string) {
+  const idx = text.toLowerCase().indexOf(accent.toLowerCase());
   if (idx === -1) return text;
   return (
     <>
@@ -35,7 +34,7 @@ export default function HeroSection() {
           </span>
 
           <h1 id="hero-heading" className="hero-h1">
-            {renderHeadline(hero.headline)}
+            {renderHeadline(hero.headline, hero.accent)}
           </h1>
 
           <p className="hero-subhead">{hero.subhead}</p>

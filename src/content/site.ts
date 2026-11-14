@@ -2,17 +2,27 @@
  * All site copy lives here in one typed file.
  *
  * PUBLIC REPOSITORY — marketing content only. Do NOT add anything internal or
- * confidential: no architecture details, service names/ports, infra, JDL,
- * credentials, customer names, or private URLs. This file is the single place
- * to review before every publish.
+ * confidential: no architecture details, internal service names/ports, infra
+ * topology, schema/JDL, credentials, customer names, or private URLs. This
+ * file is the single place to review before every publish.
  *
- * Evidence/claim rules: safe to assert — Segment-compatible event shapes,
- * versioned contracts, generated clients (TS/Java/Kotlin/Swift/Python),
- * source types, reusable blueprints, PII/SPII matcher models, ALLOW/BLOCK/OMIT
- * policy configuration, consent-to-destination mapping, permissioned audit
- * history, and modular ingestion/control-plane architecture.
- * Do NOT claim: live runtime enforcement, production-ready connectors,
- * compliance certification, customer outcomes, or verified throughput.
+ * Claim rules (every statement must be backed by shipped code or a published
+ * spec; review the product repositories before changing a claim):
+ * - Status labels are mandatory and honest:
+ *     available       — in a tagged product release.
+ *     early-access    — merged and shipping in the next release; not yet GA.
+ *     in-development  — designed/specified, NOT available (e.g. Reverse ETL).
+ *   Use "designed to" language for in-development features.
+ * - Safe to assert: Segment-compatible call types, intake enforcement
+ *   (Allow/Block/Omit), consent gates that fail closed, the listed sources,
+ *   lakes, warehouses and destinations, at-least-once delivery with retries and
+ *   a dead-letter queue, hashed identifiers, deletion/suppression requests,
+ *   fine-grained roles with OIDC SSO, audit history, write-only encrypted
+ *   credentials, SBOM + signed build provenance, the BYOC clouds and the
+ *   usage-only metering boundary.
+ * - Do NOT claim: compliance certifications or attestations, exactly-once
+ *   delivery, throughput/latency numbers, SLAs, hosting regions, customer
+ *   logos or outcomes, or anything about competitors by name.
  */
 
 // ---------------------------------------------------------------------------
@@ -31,18 +41,31 @@ export interface NavLink {
   readonly href: string;
 }
 
+export type FeatureStatus = 'available' | 'early-access' | 'in-development';
+
+export const statusLabels: Readonly<Record<FeatureStatus, string>> = {
+  available: 'Available',
+  'early-access': 'Early access',
+  'in-development': 'In development',
+};
+
 // ---------------------------------------------------------------------------
-// Brand
+// Brand & contact
 // ---------------------------------------------------------------------------
 
 export const brand = {
   name: 'Bootstrap Data',
   email: 'contact@bootstrapdata.in',
-  earlyAccessSubject: 'Bootstrap%20Data%20early%20access',
 } as const;
 
-/** Single source for the "Request early access" mailto used across the site. */
-export const earlyAccessHref = `mailto:${brand.email}?subject=${brand.earlyAccessSubject}`;
+function mailto(subject: string): string {
+  return `mailto:${brand.email}?subject=${encodeURIComponent(subject)}`;
+}
+
+/** Primary conversion: talk to us / book a demo. */
+export const demoHref = mailto('Bootstrap Data demo request');
+/** Reverse ETL design-partner enquiries. */
+export const designPartnerHref = mailto('Bootstrap Data Reverse ETL design partner');
 
 // ---------------------------------------------------------------------------
 // Navigation
@@ -50,14 +73,15 @@ export const earlyAccessHref = `mailto:${brand.email}?subject=${brand.earlyAcces
 
 export const nav = {
   links: [
-    { label: 'Decision model', href: '#decision-model' },
-    { label: 'How it works', href: '#how-it-works' },
     { label: 'Platform', href: '#platform' },
-    { label: 'Use cases', href: '#use-cases' },
+    { label: 'How it works', href: '#how-it-works' },
+    { label: 'Deployment', href: '#deployment' },
+    { label: 'Security', href: '#security' },
+    { label: 'FAQ', href: '#faq' },
   ] satisfies readonly NavLink[],
   cta: {
-    label: 'Request early access',
-    href: earlyAccessHref,
+    label: 'Book a demo',
+    href: demoHref,
   },
 } as const;
 
@@ -66,56 +90,56 @@ export const nav = {
 // ---------------------------------------------------------------------------
 
 export const hero = {
-  eyebrow: 'Data control plane',
-  headline: 'The control plane for customer data you can trust.',
-  subhead: 'Define what data should be allowed to become before it moves downstream.',
-  body: 'Bootstrap Data brings versioned contracts, sensitive-data policies, and consent mappings into one source configuration — giving teams a shared model for each downstream decision.',
+  eyebrow: 'Customer data platform · Your cloud or ours',
+  headline: 'Customer data you can trust, from the first event to every destination.',
+  /** Phrase inside the headline that receives the gradient accent. */
+  accent: 'you can trust',
+  subhead: 'Collect, govern, unify and activate first-party data with privacy built into the pipeline.',
+  body: 'Bootstrap Data checks every event against your tracking plan, sensitive-data rules and customer consent before it reaches a warehouse, data lake or marketing tool. Run it in your own cloud account, or let us run it for you.',
   primary: {
-    label: 'Request early access',
-    href: earlyAccessHref,
+    label: 'Book a demo',
+    href: demoHref,
   },
-  secondary: { label: 'Explore how it works', href: '#how-it-works' },
+  secondary: { label: 'See how it works', href: '#how-it-works' },
 } as const;
 
 // ---------------------------------------------------------------------------
-// Trust strip — factual capability pillars shown directly under the hero.
-// SAFE ASSERTIONS ONLY (see file header): no certifications, customers, or
-// runtime-enforcement claims. Each pillar maps to a modeled, reviewable feature.
+// Trust strip — factual pillars shown directly under the hero.
 // ---------------------------------------------------------------------------
 
 export interface TrustPillar {
   readonly id: string;
-  readonly icon: 'GitBranch' | 'ShieldCheck' | 'Waypoints' | 'History';
+  readonly icon: 'ShieldCheck' | 'Waypoints' | 'Cloud' | 'History';
   readonly title: string;
   readonly text: string;
 }
 
 export const trustStrip = {
-  label: 'Trust modeled into the source of truth — not bolted on afterward',
+  label: 'Governance that runs in the pipeline, not in a quarterly audit',
   pillars: [
     {
-      id: 'versioned-contracts',
-      icon: 'GitBranch',
-      title: 'Versioned contracts',
-      text: 'Every event type has an explicit, reviewable contract.',
-    },
-    {
-      id: 'sensitive-policy',
+      id: 'enforced-at-intake',
       icon: 'ShieldCheck',
-      title: 'PII / SPII policy',
-      text: 'Sensitive fields are classified and modeled, not guessed.',
+      title: 'Enforced at intake',
+      text: 'Each event is checked against its contract and privacy rules before it moves.',
     },
     {
-      id: 'consent-routing',
+      id: 'consent-fails-closed',
       icon: 'Waypoints',
-      title: 'Consent-aware routing',
-      text: 'Consent categories map to destinations in one model.',
+      title: 'Consent fails closed',
+      text: 'A tool only receives a record when the consent it needs has been granted.',
     },
     {
-      id: 'audit-history',
+      id: 'your-cloud-or-ours',
+      icon: 'Cloud',
+      title: 'Your cloud or ours',
+      text: 'Deploy in your AWS, Google Cloud, Azure or Oracle Cloud account, or use our managed cloud.',
+    },
+    {
+      id: 'audited',
       icon: 'History',
-      title: 'Permissioned history',
-      text: 'Configuration changes are auditable and attributable.',
+      title: 'Audited by default',
+      text: 'Every configuration change is recorded with who made it and when.',
     },
   ] satisfies readonly TrustPillar[],
 } as const;
@@ -126,66 +150,233 @@ export const trustStrip = {
 
 export const businessNarrative = {
   problem: {
-    heading: 'The problem every data team knows.',
+    eyebrow: 'The problem',
+    heading: 'Customer data moves faster than the rules meant to protect it.',
     intro:
-      'Most data platforms trust first and govern later. Data spreads across warehouses, analytics tools, and ad platforms before anyone asks whether it should have.',
+      'In most stacks, data is copied into warehouses, analytics and ad platforms first. Governance happens later, by hand, if at all.',
     items: [
       {
         id: 'schema-drift',
-        text: 'Events reach downstream tools before anyone reviews a schema change.',
+        text: 'Broken or unplanned events reach dashboards and campaigns before anyone notices.',
       },
       {
         id: 'pii-boundary',
-        text: 'PII reaches warehouses and ad platforms because no single layer owns the boundary.',
+        text: 'Personal data ends up in tools that were never meant to hold it.',
       },
       {
         id: 'consent-gap',
-        text: 'Consent is captured in a banner and forgotten the moment data starts flowing.',
+        text: 'Consent is collected in a banner, then ignored once data starts flowing.',
       },
       {
-        id: 'governance-lag',
-        text: 'Governance is a quarterly audit, not a property of the pipeline itself.',
+        id: 'deletion-sprawl',
+        text: 'A single deletion request becomes a manual hunt across every system.',
       },
       {
-        id: 'policy-handoff',
-        text: 'Policy handoffs between engineering and legal slow every launch that touches user data.',
+        id: 'data-residency',
+        text: 'Security teams push back on sending raw customer data to another vendor’s cloud.',
       },
     ],
   },
   solution: {
-    heading: 'One control plane changes the equation.',
+    eyebrow: 'The Bootstrap Data way',
+    heading: 'Decide what data may do before it moves.',
     intro:
-      'Bootstrap Data inverts that order by bringing contracts, sensitive-data policies, and consent mappings into the same layer where each source is configured.',
+      'Bootstrap Data puts your tracking plan, privacy rules and consent in the path of every event, then delivers only what passes.',
     items: [
       {
-        id: 'versioned-contracts',
-        text: 'Define an explicit, versioned contract for each event type.',
+        id: 'contracts',
+        text: 'Versioned data contracts define what each source is allowed to send.',
       },
       {
-        id: 'sensitive-data-policy',
-        text: 'PII and SPII fields are modeled and classified, making sensitive-data policy visible and reviewable.',
+        id: 'sensitive-data',
+        text: 'Personal and sensitive fields are classified and removed or blocked automatically.',
       },
       {
-        id: 'consent-routing',
-        text: 'Consent categories map directly to destination routing decisions in the same model.',
+        id: 'consent',
+        text: 'Consent categories decide which destinations may receive each record.',
       },
       {
-        id: 'auditable-config',
-        text: 'Governance configuration is centralized, permissioned, and auditable across teams.',
+        id: 'privacy-requests',
+        text: 'Deletion and suppression requests (early access) reach every connected store and tool from one place.',
       },
       {
-        id: 'reusable-blueprints',
-        text: 'Reusable synchronized blueprints eliminate redundant work as sources multiply.',
+        id: 'byoc',
+        text: 'Run it inside your own cloud account, so event data and personal data stay there.',
       },
     ],
   },
-  controlPlane: {
-    heading: 'Governance as an engineering workflow.',
-    body: 'Engineering teams already configure data pipelines. The question is whether governance is modeled at that layer or reconstructed after data has spread. Bootstrap Data makes governance a first-class engineering concern: versioned, reviewable, and connected to each source configuration.',
-    wedge:
-      'Start with governance at source configuration. Extend the same model across collection, contracts, privacy policy, storage, and activation.',
-    footnote:
-      'Bootstrap Data is in early access. Capabilities described here are in active development and access is limited.',
+} as const;
+
+// ---------------------------------------------------------------------------
+// Platform — the customer data lifecycle
+// ---------------------------------------------------------------------------
+
+export type ModuleIcon =
+  | 'Radio'
+  | 'ShieldCheck'
+  | 'Wand2'
+  | 'Database'
+  | 'Fingerprint'
+  | 'Send'
+  | 'Activity'
+  | 'UserX'
+  | 'Bot'
+  | 'FileCode2';
+
+export interface PlatformModule {
+  readonly id: string;
+  readonly icon: ModuleIcon;
+  readonly stage: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly points: readonly string[];
+  readonly status: FeatureStatus;
+}
+
+export const platform = {
+  eyebrow: 'Platform',
+  heading: 'One platform for the whole customer data lifecycle.',
+  subhead:
+    'Collect events, enforce your rules, build unified profiles (early access) and deliver to the tools your teams use, with the same governance at every step.',
+  modules: [
+    {
+      id: 'collect',
+      icon: 'Radio',
+      stage: 'Collect',
+      title: 'Event collection',
+      summary: 'One collection layer for web, mobile, game and server events.',
+      points: [
+        'Android, iOS, JavaScript, Unity and server-side sources',
+        'Segment-compatible calls: track, page, screen, identify, group, alias, batch',
+        'Per-source write keys and IP allowlists',
+      ],
+      status: 'available',
+    },
+    {
+      id: 'govern',
+      icon: 'ShieldCheck',
+      stage: 'Govern',
+      title: 'Contracts & privacy rules',
+      summary: 'Your tracking plan and privacy policy, enforced on every event.',
+      points: [
+        'Versioned data contracts built from reusable event and property blueprints',
+        'Allow, block or omit unplanned events, unplanned properties, schema violations, PII and sensitive PII',
+        'Field classification by name, value or pattern',
+      ],
+      status: 'available',
+    },
+    {
+      id: 'transform',
+      icon: 'Wand2',
+      stage: 'Shape',
+      title: 'Filters & transformations',
+      summary: 'Send each tool exactly the data it needs.',
+      points: [
+        'Drop or sample events; allow or block fields per destination',
+        'Custom JavaScript transformations in a sandbox, at the source or per destination (early access)',
+        'Choose what happens on error: dead-letter, drop or pass through',
+      ],
+      status: 'available',
+    },
+    {
+      id: 'store',
+      icon: 'Database',
+      stage: 'Store',
+      title: 'Warehouses & data lakes',
+      summary: 'Own a clean, governed copy of every event.',
+      points: [
+        'Snowflake, BigQuery and Databricks, with typed tables generated from your tracking plan',
+        'Amazon S3 and S3-compatible storage, Google Cloud Storage and Azure Blob Storage',
+        'JSON or Parquet, your choice of compression and retention',
+      ],
+      status: 'available',
+    },
+    {
+      id: 'unify',
+      icon: 'Fingerprint',
+      stage: 'Unify',
+      title: 'Identity resolution & profiles',
+      summary: 'Join a customer’s activity into one profile, without storing raw identifiers.',
+      points: [
+        'Deterministic matching on user ID, anonymous ID, email and phone, by rules you set',
+        'Identifiers stored only as keyed hashes; limits and blocklists prevent bad merges',
+        'Declared profile traits resolved by rules such as latest value or source priority',
+      ],
+      status: 'early-access',
+    },
+    {
+      id: 'activate',
+      icon: 'Send',
+      stage: 'Activate',
+      title: 'Destinations',
+      summary: 'Deliver governed events to the tools your teams already use.',
+      points: [
+        'Amplitude, Braze, Customer.io, Google, Iterable, Meta, Mixpanel and any webhook',
+        'Field mappings with triggers, so each tool gets the right shape',
+        'Automatic retries that respect vendor rate limits, plus a dead-letter queue',
+      ],
+      status: 'available',
+    },
+    {
+      id: 'debug',
+      icon: 'Activity',
+      stage: 'Observe',
+      title: 'Source debugger',
+      summary: 'See what each source sends and what the platform did with it.',
+      points: [
+        'Live stream of incoming events with personal data masked',
+        'Search and filter; compare what was received with what was forwarded',
+        'Unmasking is limited to privacy officers and every reveal is audited',
+      ],
+      status: 'early-access',
+    },
+    {
+      id: 'privacy',
+      icon: 'UserX',
+      stage: 'Protect',
+      title: 'Deletion & suppression requests',
+      summary: 'Act on data subject requests across the whole platform.',
+      points: [
+        'Suppress, delete, or both, by user ID, anonymous ID, email or phone',
+        'Erasure across warehouses, lakes, profiles and destinations, with status tracking and manual sign-off where a tool has no deletion API',
+        'Record the regulation behind each request: GDPR, CCPA, CPRA, LGPD or India’s DPDP Act',
+      ],
+      status: 'early-access',
+    },
+    {
+      id: 'ai',
+      icon: 'Bot',
+      stage: 'Assist',
+      title: 'AI assistant access (MCP)',
+      summary: 'Let AI assistants work with your tracking plan through the Model Context Protocol.',
+      points: [
+        'Browse contracts, sources and governance rules',
+        'Validate a sample event against its contract before you ship it',
+        'Read-only by default; changes need explicit write permission',
+      ],
+      status: 'available',
+    },
+    {
+      id: 'config-as-code',
+      icon: 'FileCode2',
+      stage: 'Automate',
+      title: 'Configuration as code',
+      summary: 'Manage the platform from Git and CI, not just the UI.',
+      points: [
+        'Command-line tool to export and apply configuration declaratively, with dry runs',
+        'Validate events against contracts in CI',
+        'Typed tracking clients for TypeScript, Java, Kotlin, Swift and Python',
+      ],
+      status: 'available',
+    },
+  ] satisfies readonly PlatformModule[],
+  sources: {
+    label: 'Source types',
+    items: ['Android', 'iOS', 'JavaScript', 'Unity', 'Direct API'],
+  },
+  clients: {
+    label: 'Generated clients',
+    items: ['TypeScript', 'Java', 'Kotlin', 'Swift', 'Python'],
   },
 } as const;
 
@@ -194,39 +385,38 @@ export const businessNarrative = {
 // ---------------------------------------------------------------------------
 
 export const decisionModel = {
-  heading: 'Three decisions. One shared language.',
+  heading: 'Three decisions. Applied to every event.',
   intro:
-    'The policy model makes each intended data movement explicit: allow it, block it, or omit sensitive fields.',
+    'For each source you choose what happens to unplanned data, schema violations and personal data: allow it, block it, or omit the sensitive fields.',
   items: [
     {
       verdict: 'ALLOW' as DecisionVerdict,
-      headline: 'Retain and route',
-      body: 'Use ALLOW when an event matches its contract, required consent is present, and its fields are approved for declared destinations.',
-      detail:
-        'The configuration describes the complete proposed payload and the destinations eligible to receive it.',
+      headline: 'Pass and deliver',
+      body: 'The event matches its contract and carries nothing your rules restrict, so it continues to storage and to every destination its consent allows.',
+      detail: 'Consent is still checked per destination, so “allowed” never means “sent everywhere”.',
       snippet: 'decision: ALLOW\ndestinations: [warehouse, analytics, activation]',
     },
     {
       verdict: 'BLOCK' as DecisionVerdict,
       headline: 'Stop at the door',
-      body: 'Use BLOCK to model a stop condition such as missing consent, a contract mismatch, or an explicit propagation rule.',
+      body: 'Unplanned events, schema violations or sensitive data your policy forbids stop at intake. Nothing reaches downstream tools.',
       detail:
-        'The blocking condition stays visible in policy configuration so engineering and governance teams can review the same intent.',
-      snippet: 'decision: BLOCK\nreason: consent_missing:advertising',
+        'Use the source debugger (early access) to see why an event was blocked and fix it at the source.',
+      snippet: 'decision: BLOCK\nreason: unplanned_event',
     },
     {
       verdict: 'OMIT' as DecisionVerdict,
-      headline: 'Strip, then route',
-      body: 'Use OMIT to define which PII or SPII fields should be removed before an event is forwarded.',
+      headline: 'Strip, then deliver',
+      body: 'Personal or sensitive fields are removed and the rest of the event continues, so analytics keeps working without the risk.',
       detail:
-        'The model identifies the proposed minimized payload and the propagation rule responsible for each omitted field.',
+        'Fields are matched by name, value or pattern, so sensitive data is caught wherever it appears.',
       snippet: 'decision: OMIT\nremoved: [email, date_of_birth]\ndestinations: [warehouse, analytics]',
     },
   ],
 } as const;
 
 // ---------------------------------------------------------------------------
-// How it works — living lineage stages (Capture → … → Audit)
+// How it works — lineage stages (Capture → … → Audit)
 // ---------------------------------------------------------------------------
 
 export interface WorkflowStage {
@@ -240,197 +430,70 @@ export interface WorkflowStage {
 }
 
 export const howItWorks = {
-  heading: 'Follow one event through the policy model.',
+  heading: 'Follow one event from collection to delivery.',
   subhead:
-    'A source configuration connects five concerns — collection, contracts, governance, routing intent, and configuration audit — in one coherent model.',
+    'Every event takes the same governed path: collected, checked against its contract, cleaned of what it shouldn’t carry, delivered where consent allows, and recorded.',
   stages: [
     {
       id: 'capture',
       number: '01',
-      label: 'Capture',
-      headline: 'Familiar signals, one collection surface.',
-      body: 'Accept Segment-compatible events from web, mobile, server, and batch sources. Familiar event shapes — track, page, screen, identify, group — work without pipeline rewrites.',
+      label: 'Collect',
+      headline: 'Familiar calls, one collection layer.',
+      body: 'Send events from web, mobile, games and servers using Segment-compatible calls, so existing instrumentation needs little rework.',
       technical:
-        'Generated type-safe clients for TypeScript, Java, Kotlin, Swift, and Python. Source types: Android, iOS, JavaScript, Unity, Direct API.',
+        'Sources: Android, iOS, JavaScript, Unity, Direct API. Typed clients for TypeScript, Java, Kotlin, Swift and Python.',
       snippet:
         'bd.track("checkout_started", {\n  cart_value: 149.00,\n  currency: "USD",\n  user_id: "u_7732"\n});',
     },
     {
       id: 'contract',
       number: '02',
-      label: 'Contract',
-      headline: 'Give every event a versioned shape.',
-      body: 'Define reusable event and property blueprints that become the single explicit contract across all sources. Synchronized read-only copies let teams consume without diverging.',
+      label: 'Validate',
+      headline: 'Every event checked against its contract.',
+      body: 'Data contracts, built from reusable blueprints, describe the events and properties each source may send. Violations are handled the way your policy says.',
       technical:
-        'Versioned OpenAPI contracts generate clients in five languages. Reusable event and property blueprints share definitions across sources.',
+        'Versioned contracts. Reusable event and property blueprints shared across sources. Contract checks in CI from the command line.',
       snippet:
         'contract: checkout_started @ v3\nblueprint: ecommerce/checkout\nrequired: [cart_value, currency]',
     },
     {
       id: 'govern',
       number: '03',
-      label: 'Govern',
-      headline: 'PII and consent, modeled explicitly.',
-      body: 'Fields are classified as PII or SPII using key, value, and regex matcher models. Consent categories are mapped to what was actually granted, with propagation policy configured per rule.',
+      label: 'Protect',
+      headline: 'Personal data classified and handled.',
+      body: 'Fields are classified as general, personal (PII) or sensitive (SPII). Your policy decides whether to allow, block or omit them, per source.',
       technical:
-        'PII/SPII key/value/regex matchers. Allow/block/omit propagation policy configuration. Consent category to destination mapping.',
+        'Field matchers by name, value or pattern. Allow / block / omit for unplanned data, schema violations, PII and SPII.',
       snippet:
-        'fields.user_email: PII  → omit_rule: strip_before_route\nfields.date_of_birth: SPII → omit_rule: strip_always\nconsent.analytics: granted',
+        'fields.user_email:    PII  → omit\nfields.date_of_birth: SPII → block\nconsent.analytics:    granted',
     },
     {
       id: 'route',
       number: '04',
-      label: 'Route',
-      headline: 'Model ALLOW, BLOCK, or OMIT.',
-      body: 'Connect governance policy to destination configuration so intended data movement is explicit and reviewable. Destination field filters and mappings share the same governance model.',
+      label: 'Deliver',
+      headline: 'Delivered only where consent allows.',
+      body: 'Each destination is linked to the consent categories it needs. If consent is missing, the record is not sent. Filters, mappings and transformations shape the rest.',
       technical:
-        'Lake, warehouse, and destination models. Destination field filters and mappings. Consent-gated routing configuration.',
+        'Consent gates fail closed. Warehouses, data lakes and destinations. Retries with backoff and a dead-letter queue.',
       snippet:
-        'decision: OMIT\nremoved: [user_email, date_of_birth]\nproposed_destinations:\n  - warehouse   ✓ (analytics consent)\n  - activation  ✗ (advertising consent absent)',
+        'decision: OMIT\nremoved: [user_email, date_of_birth]\ndelivered:\n  - warehouse   ✓ (analytics consent)\n  - activation  ✗ (advertising consent absent)',
     },
     {
       id: 'audit',
       number: '05',
       label: 'Audit',
-      headline: 'Every configuration change, traceable.',
-      body: 'Review policy and connection history so teams can understand who changed the control plane and when. Permissioned mutations mean governance changes require explicit authorization.',
+      headline: 'Every change, attributable.',
+      body: 'Configuration history shows who changed which rule and when. Access is controlled by role, and sensitive actions are restricted and logged.',
       technical:
-        'Permissioned configuration mutations. Entity history for governance and connection changes.',
+        'Change history on every configuration item. Role-based permissions with single sign-on (early access).',
       snippet:
-        'policy.version: 14\nchange: propagation_rule.updated\nactor: data-platform-team\ntimestamp: 2025-06-12T09:14:22Z',
+        'policy.version: 14\nchange: propagation_rule.updated\nactor: data-platform-team\ntimestamp: 2026-06-12T09:14:22Z',
     },
   ] satisfies readonly WorkflowStage[],
 } as const;
 
 // ---------------------------------------------------------------------------
-// Platform capabilities (technical credibility)
-// ---------------------------------------------------------------------------
-
-export const platform = {
-  heading: 'Built for engineering teams that think in contracts.',
-  subhead:
-    'Each capability is independently deployable and modular — ingestion scales separately from the control plane.',
-  capabilities: [
-    {
-      id: 'segment-compat',
-      icon: 'Zap' as const,
-      label: 'Segment-compatible collection',
-      detail:
-        'Drop-in ingestion for events already shaped for Segment-style pipelines. track, page, screen, identify, group, alias, and batch shapes all supported.',
-    },
-    {
-      id: 'generated-clients',
-      icon: 'Code2' as const,
-      label: 'Contract-generated clients',
-      detail:
-        'Versioned OpenAPI contracts generate type-safe clients for TypeScript, Java, Kotlin, Swift, and Python. Clients stay in sync as contracts evolve.',
-    },
-    {
-      id: 'blueprints',
-      icon: 'Copy' as const,
-      label: 'Reusable blueprints',
-      detail:
-        'Define event and property blueprints once. Synchronize read-only copies to sources, or snapshot an editable copy for local customization.',
-    },
-    {
-      id: 'pii-spii',
-      icon: 'ShieldCheck' as const,
-      label: 'PII / SPII classification',
-      detail:
-        'Model sensitive fields using key, value, and regex matchers. Configure allow, block, or omit propagation policies per rule, per destination.',
-    },
-    {
-      id: 'consent',
-      icon: 'ToggleRight' as const,
-      label: 'Consent-gated routing',
-      detail:
-        'Map consent categories directly to destination routing decisions. Configuration is versioned and reviewable alongside data contracts.',
-    },
-    {
-      id: 'audit',
-      icon: 'History' as const,
-      label: 'Permissioned audit history',
-      detail:
-        'Every governance mutation requires explicit authorization. Policy version, actor, and timestamp are recorded against configuration changes.',
-    },
-  ],
-  sources: {
-    label: 'Source types',
-    items: ['Android', 'iOS', 'JavaScript', 'Unity', 'Direct API'],
-  },
-  clients: {
-    label: 'Generated clients',
-    items: ['TypeScript', 'Java', 'Kotlin', 'Swift', 'Python'],
-  },
-} as const;
-
-// ---------------------------------------------------------------------------
-// Use cases / personas
-// ---------------------------------------------------------------------------
-
-export const useCases = {
-  eyebrow: 'Who it’s for',
-  heading: 'One control plane. Every team that touches data.',
-  intro:
-    'The same governed model reads differently depending on where you sit — but it stays a single source of truth for all of them.',
-  items: [
-    {
-      id: 'platform-eng',
-      icon: 'Code2' as const,
-      role: 'Data platform engineers',
-      headline: 'Replace ad-hoc pipeline policies with versioned configuration.',
-      outcomes: [
-        'Define data contracts once; reuse them across every source.',
-        'Make schema changes explicit and reviewable at the contract layer.',
-        'Review destination policy centrally instead of source by source.',
-        'Reduce migration work with familiar Segment-compatible event shapes.',
-      ],
-    },
-    {
-      id: 'analytics-eng',
-      icon: 'BarChart3' as const,
-      role: 'Analytics engineers',
-      headline: 'Make trust requirements explicit before data reaches your models.',
-      outcomes: [
-        'Keep declared event contracts and schema rules visible in one model.',
-        'Define the minimized payload each destination should receive.',
-        'Connect warehouse mapping intent to the governing source policy.',
-        'Review governance configuration through a normal change workflow.',
-      ],
-    },
-    {
-      id: 'privacy-gov',
-      icon: 'Lock' as const,
-      role: 'Privacy and governance teams',
-      headline: 'Make privacy decisions explicit, not archaeological.',
-      outcomes: [
-        'Model PII and SPII classifications in the same layer as source configuration.',
-        'See consent-to-destination mappings in one reviewable model.',
-        'Use configuration history to review who changed which policy and when.',
-        'Align engineering and legal on one shared data language.',
-      ],
-    },
-  ],
-} as const;
-
-// ---------------------------------------------------------------------------
-// CTA section
-// ---------------------------------------------------------------------------
-
-export const ctaSection = {
-  heading: 'Design a decision for every event.',
-  subhead:
-    'Bootstrap Data is in early access. Capabilities are in active development and the initial cohort is limited.',
-  primary: {
-    label: 'Request early access',
-    href: earlyAccessHref,
-  },
-  secondary: { label: 'Explore how it works', href: '#how-it-works' },
-  footnote: 'Tell us about your data stack and the governance problem you want to solve.',
-} as const;
-
-// ---------------------------------------------------------------------------
-// Event journey — scroll-cinematic spike data (illustrative)
+// Event journey — scroll-cinematic walkthrough (illustrative)
 // ---------------------------------------------------------------------------
 
 export interface JourneyField {
@@ -446,10 +509,10 @@ export interface JourneyGate {
 }
 
 export const eventJourney = {
-  eyebrow: 'Live walk-through',
-  heading: 'One event, through the whole control plane.',
+  eyebrow: 'Walk-through',
+  heading: 'One event, through every check.',
   subhead:
-    'Scroll to watch a single checkout_started event get contracted, classified, consent-checked, and routed — one field gets minimized on the way.',
+    'Scroll to follow a checkout_started event as it is validated, classified, consent-checked and delivered. One personal field is removed on the way.',
   event: {
     label: 'checkout_started',
     fields: [
@@ -460,10 +523,10 @@ export const eventJourney = {
     ] satisfies readonly JourneyField[],
   },
   gates: [
-    { id: 'contract', label: 'Contract', caption: 'Validated against a versioned schema' },
-    { id: 'policy', label: 'PII / SPII policy', caption: 'Sensitive fields classified & minimized' },
+    { id: 'contract', label: 'Contract', caption: 'Validated against a versioned contract' },
+    { id: 'policy', label: 'PII / SPII policy', caption: 'Sensitive fields classified and removed' },
     { id: 'consent', label: 'Consent', caption: 'Checked against granted categories' },
-    { id: 'destinations', label: 'Destinations', caption: 'Governed payload routed downstream' },
+    { id: 'destinations', label: 'Destinations', caption: 'Clean payload delivered downstream' },
   ] satisfies readonly JourneyGate[],
   verdict: 'OMIT' as DecisionVerdict,
   omitted: 'user_email',
@@ -471,23 +534,580 @@ export const eventJourney = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// Integrations
+// ---------------------------------------------------------------------------
+
+export type IntegrationLogo =
+  | 'Android'
+  | 'iOS'
+  | 'JavaScript'
+  | 'Unity'
+  | 'API'
+  | 'Snowflake'
+  | 'BigQuery'
+  | 'Databricks'
+  | 'S3'
+  | 'GCS'
+  | 'Azure'
+  | 'Amplitude'
+  | 'Braze'
+  | 'Customer.io'
+  | 'Google'
+  | 'Iterable'
+  | 'Meta'
+  | 'Mixpanel'
+  | 'Webhook'
+  | 'AWS'
+  | 'GoogleCloud'
+  | 'Oracle'
+  | 'Helm'
+  | 'Argo'
+  | 'Flux'
+  | 'OpenID';
+
+export interface IntegrationItem {
+  readonly name: string;
+  readonly logo: IntegrationLogo;
+  readonly status?: FeatureStatus;
+}
+
+export interface IntegrationGroup {
+  readonly id: string;
+  readonly label: string;
+  readonly caption: string;
+  readonly items: readonly IntegrationItem[];
+}
+
+export const integrations = {
+  eyebrow: 'Integrations',
+  heading: 'Works with the stack you already run.',
+  intro:
+    'Connect your apps, your data platform and your marketing tools. Every connection goes through the same contracts, privacy rules and consent checks.',
+  groups: [
+    {
+      id: 'sources',
+      label: 'Sources',
+      caption: 'Collect from',
+      items: [
+        { name: 'Android', logo: 'Android' },
+        { name: 'iOS', logo: 'iOS' },
+        { name: 'JavaScript', logo: 'JavaScript' },
+        { name: 'Unity', logo: 'Unity' },
+        { name: 'HTTP API', logo: 'API' },
+      ],
+    },
+    {
+      id: 'warehouses',
+      label: 'Warehouses',
+      caption: 'Load into',
+      items: [
+        { name: 'Snowflake', logo: 'Snowflake' },
+        { name: 'BigQuery', logo: 'BigQuery' },
+        { name: 'Databricks', logo: 'Databricks' },
+      ],
+    },
+    {
+      id: 'lakes',
+      label: 'Data lakes',
+      caption: 'Archive to',
+      items: [
+        { name: 'Amazon S3 & S3-compatible', logo: 'S3' },
+        { name: 'Google Cloud Storage', logo: 'GCS' },
+        { name: 'Azure Blob Storage', logo: 'Azure' },
+      ],
+    },
+    {
+      id: 'destinations',
+      label: 'Destinations',
+      caption: 'Activate in',
+      items: [
+        { name: 'Amplitude', logo: 'Amplitude' },
+        { name: 'Braze', logo: 'Braze' },
+        { name: 'Customer.io', logo: 'Customer.io' },
+        { name: 'Google', logo: 'Google' },
+        { name: 'Iterable', logo: 'Iterable' },
+        { name: 'Meta', logo: 'Meta' },
+        { name: 'Mixpanel', logo: 'Mixpanel' },
+        { name: 'Webhook', logo: 'Webhook' },
+      ],
+    },
+    {
+      id: 'deploy',
+      label: 'Deploy & operate',
+      caption: 'Run on',
+      items: [
+        { name: 'Amazon EKS', logo: 'AWS' },
+        { name: 'Google GKE', logo: 'GoogleCloud' },
+        { name: 'Azure AKS', logo: 'Azure' },
+        { name: 'Oracle OKE', logo: 'Oracle' },
+        { name: 'Helm', logo: 'Helm' },
+        { name: 'Argo CD', logo: 'Argo' },
+        { name: 'Flux', logo: 'Flux' },
+        { name: 'OpenID Connect SSO', logo: 'OpenID', status: 'early-access' },
+      ],
+    },
+  ] satisfies readonly IntegrationGroup[],
+  footnote: 'Need a connector that isn’t listed? Webhooks cover most HTTP APIs today. Tell us what you need.',
+} as const;
+
+// ---------------------------------------------------------------------------
+// Reverse ETL — IN DEVELOPMENT. Planned design only; use "designed to" language.
+// ---------------------------------------------------------------------------
+
+export interface RetlFeature {
+  readonly id: string;
+  readonly title: string;
+  readonly text: string;
+}
+
+export const reverseEtl = {
+  eyebrow: 'Reverse ETL',
+  status: 'in-development' as FeatureStatus,
+  heading: 'Put warehouse insights to work, safely.',
+  intro:
+    'Your best audiences, scores and traits live in the warehouse. Reverse ETL is designed to sync them to the tools your teams use, with the same privacy and consent rules as your event data.',
+  flow: {
+    from: { label: 'Your warehouse model', items: ['Snowflake', 'BigQuery', 'Databricks', 'Postgres'] },
+    via: 'Governed sync',
+    to: { label: 'Your tools', items: ['Braze', 'Customer.io', 'Iterable', 'Webhook', 'and more'] },
+  },
+  diagram: {
+    title: 'How a governed sync is designed to work',
+    caption: 'Illustration of planned behaviour with sample records. Reverse ETL is in development.',
+    model: 'high_value_customers',
+    modelLabel: 'Warehouse model',
+    rows: [
+      { id: 'cus_1042', trait: 'Pro · high LTV', outcome: 'synced', note: 'Updated' },
+      { id: 'cus_2210', trait: 'Pro · high LTV', outcome: 'skipped', note: 'Suppressed' },
+      { id: 'cus_3381', trait: 'Team · mid LTV', outcome: 'skipped', note: 'No change' },
+      { id: 'cus_4517', trait: 'Pro · high LTV', outcome: 'synced', note: 'Added' },
+    ],
+    checks: ['Consent', 'Suppression', 'Changed since last run'],
+    summary: '2 delivered and confirmed, 2 skipped',
+    replay: 'Replay',
+  },
+  features: [
+    {
+      id: 'confirmed-delivery',
+      title: 'Confirmed delivery',
+      text: 'Designed to count a record as synced only after the destination confirms it, so a cancelled or interrupted run resumes where it stopped.',
+    },
+    {
+      id: 'mass-change-guard',
+      title: 'Guard against mass changes',
+      text: 'Designed so unusually large changes or deletes wait for approval instead of reaching a destination.',
+    },
+    {
+      id: 'governed',
+      title: 'Same privacy rules',
+      text: 'Designed to apply the same suppression and consent checks used for events before any synced record is sent.',
+    },
+    {
+      id: 'efficient',
+      title: 'Only what changed',
+      text: 'Designed to track changes on mapped columns only and skip runs when the source data hasn’t changed.',
+    },
+    {
+      id: 'safe-rollout',
+      title: 'Preview before you sync',
+      text: 'Planned dry runs, primary-key checks and re-baselining let you test a sync before it touches production.',
+    },
+    {
+      id: 'scheduling',
+      title: 'Runs on your schedule',
+      text: 'Planned triggers: intervals, cron with time zones, API calls, or after your dbt Cloud, Airflow, Dagster or GitHub Actions jobs finish.',
+    },
+  ] satisfies readonly RetlFeature[],
+  modes: ['Add', 'Update', 'Upsert', 'Delete', 'Mirror', 'List add / remove'],
+  modesLabel: 'Planned sync modes',
+  note: 'Reverse ETL is in development and not yet available. Planned capabilities may change before release.',
+  cta: { label: 'Become a design partner', href: designPartnerHref },
+} as const;
+
+// ---------------------------------------------------------------------------
+// Deployment — BYOC vs Cloud
+// ---------------------------------------------------------------------------
+
+export type DeploymentId = 'byoc' | 'cloud';
+
+export interface DeploymentOption {
+  readonly id: DeploymentId;
+  readonly icon: 'Server' | 'Cloud';
+  readonly name: string;
+  readonly tagline: string;
+  readonly bestFor: string;
+  readonly points: readonly string[];
+}
+
+export interface ChooserQuestion {
+  readonly id: string;
+  readonly question: string;
+  /** Which option a "yes" answer points to. */
+  readonly yes: DeploymentId;
+  readonly reason: string;
+  /** Optional: which option a "no" answer points to, and why. */
+  readonly no?: DeploymentId;
+  readonly noReason?: string;
+  /** A "yes" is a hard requirement: it decides the recommendation on its own. */
+  readonly decisive?: boolean;
+}
+
+export const deployment = {
+  eyebrow: 'Deployment',
+  heading: 'Your cloud or ours. Same platform.',
+  intro:
+    'Choose where Bootstrap Data runs based on your data residency, security and operating needs. Both run the same platform.',
+  options: [
+    {
+      id: 'byoc',
+      icon: 'Server',
+      name: 'Bring your own cloud (BYOC)',
+      tagline: 'Runs inside your cloud account. Customer data stays there.',
+      bestFor: 'Best for regulated industries, strict data residency, and teams that run Kubernetes.',
+      points: [
+        'Deploy to Kubernetes on AWS, Google Cloud, Azure or Oracle Cloud with versioned Helm charts',
+        'Event data, logs and personal data stay in your account; only aggregated usage counts are sent for billing',
+        'Use your own managed databases and identity provider, or run them in the cluster',
+        'Only the app and the event intake are exposed; internal traffic is denied by default',
+        'You choose when to upgrade; roll back if needed',
+      ],
+    },
+    {
+      id: 'cloud',
+      icon: 'Cloud',
+      name: 'Bootstrap Data Cloud',
+      tagline: 'Fully managed by us. Start collecting fast.',
+      bestFor: 'Best for teams that want to go live quickly without operating infrastructure.',
+      points: [
+        'We run, monitor and upgrade the platform for you',
+        'The same contracts, privacy rules, consent checks and connectors',
+        'Single sign-on and role-based access (early access)',
+        'Configuration exports as code, so you can move to BYOC later',
+        'Talk to us about hosting regions and data residency',
+      ],
+    },
+  ] satisfies readonly DeploymentOption[],
+  visual: {
+    apps: 'Your apps',
+    platform: 'Bootstrap Data',
+    destinations: 'Your warehouse & tools',
+    byoc: {
+      boundary: 'Your cloud account',
+      external: 'Bootstrap Data billing',
+      link: 'Usage counts only',
+      foot: 'Event data, logs and personal data stay inside',
+      label:
+        'BYOC: your apps, Bootstrap Data and your warehouse and tools all run inside your cloud account. Only usage counts leave it, for billing.',
+    },
+    cloud: {
+      boundary: 'Bootstrap Data Cloud',
+      external: 'Bootstrap Data team',
+      link: 'Runs, monitors, upgrades',
+      foot: 'Same contracts, privacy rules and consent checks',
+      label:
+        'Bootstrap Data Cloud: your apps send events to Bootstrap Data, which we run, monitor and upgrade, and it delivers to your warehouse and tools.',
+    },
+  },
+  chooser: {
+    heading: 'Not sure which fits?',
+    intro: 'Answer three questions for a starting recommendation.',
+    questions: [
+      {
+        id: 'residency',
+        question: 'Must customer data stay inside your own cloud account?',
+        yes: 'byoc',
+        reason: 'customer data has to stay in your own account',
+        decisive: true,
+      },
+      {
+        id: 'kubernetes',
+        question: 'Do you have a team that operates Kubernetes in production?',
+        yes: 'byoc',
+        reason: 'your team already runs Kubernetes',
+        no: 'cloud',
+        noReason: 'you would rather not operate Kubernetes yourself',
+      },
+      {
+        id: 'speed',
+        question: 'Is going live quickly, without new infrastructure, the top priority?',
+        yes: 'cloud',
+        reason: 'speed without new infrastructure matters most',
+      },
+    ] satisfies readonly ChooserQuestion[],
+    empty: 'Answer the questions to see a recommendation.',
+    incomplete: 'Answer the remaining questions to see a recommendation.',
+    tie: 'Either could work. You can start in our cloud and move to BYOC later, since configuration exports as code. Let’s talk it through.',
+  },
+  billing: {
+    status: 'early-access' as FeatureStatus,
+    title: 'Clear, usage-based billing',
+    text: 'Billing is based on usage you can verify. In BYOC, only aggregated usage counts leave your account; event payloads, logs and personal data never do.',
+    points: [
+      'Usage reports are signed and sent outbound only, over mutually authenticated TLS',
+      'Every invoice line traces back to an append-only usage ledger',
+      'Missed reports are detected and reconciled, not guessed',
+    ],
+  },
+} as const;
+
+// ---------------------------------------------------------------------------
+// Security & trust
+// ---------------------------------------------------------------------------
+
+export type SecurityIcon = 'KeyRound' | 'Users' | 'History' | 'Lock' | 'Network' | 'PackageCheck';
+
+export interface SecurityItem {
+  readonly id: string;
+  readonly icon: SecurityIcon;
+  readonly title: string;
+  readonly text: string;
+  readonly status: FeatureStatus;
+}
+
+export const security = {
+  eyebrow: 'Security & trust',
+  heading: 'Built for the security review.',
+  intro:
+    'Least privilege, full audit history and a verifiable software supply chain are part of the product, not add-ons.',
+  items: [
+    {
+      id: 'sso-rbac',
+      icon: 'Users',
+      title: 'Single sign-on and fine-grained roles',
+      text: 'Sign in with your OpenID Connect identity provider. Ten built-in roles, from viewer and analyst to privacy officer and auditor, assigned through groups. Access is denied unless granted.',
+      status: 'early-access',
+    },
+    {
+      id: 'break-glass',
+      icon: 'KeyRound',
+      title: 'Sensitive actions locked down',
+      text: 'Stored connection secrets are never shown back, even to administrators. Unmasking personal data in the debugger is limited to privacy officers and an emergency break-glass role, and every reveal is logged.',
+      status: 'early-access',
+    },
+    {
+      id: 'audit',
+      icon: 'History',
+      title: 'Complete change history',
+      text: 'Every change to sources, contracts, policies and connections is recorded with who made it and when.',
+      status: 'available',
+    },
+    {
+      id: 'secrets',
+      icon: 'Lock',
+      title: 'Credentials and identifiers protected',
+      text: 'Connection credentials are encrypted at rest, write-only and never returned by the API. With unified profiles (early access), identifiers are stored only as keyed hashes.',
+      status: 'available',
+    },
+    {
+      id: 'network',
+      icon: 'Network',
+      title: 'Minimal network exposure',
+      text: 'In BYOC, only the app and the event intake are reachable from outside. Internal traffic is denied by default, and metering is outbound only.',
+      status: 'available',
+    },
+    {
+      id: 'supply-chain',
+      icon: 'PackageCheck',
+      title: 'Verifiable releases',
+      text: 'Versioned releases for amd64 and arm64, each with a software bill of materials (SPDX) and signed build provenance attestations.',
+      status: 'available',
+    },
+  ] satisfies readonly SecurityItem[],
+  privacy: {
+    status: 'early-access' as FeatureStatus,
+    title: 'Privacy requests across the stack',
+    text: 'Suppress or delete a person’s data across storage, profiles and destinations, and record the regulation behind each request.',
+    regulations: ['GDPR', 'CCPA', 'CPRA', 'LGPD', 'DPDP Act'],
+    regulationsLabel: 'Regulations you can record',
+    diagram: {
+      request: 'Deletion request',
+      basis: 'Regulation: GDPR',
+      targets: ['Event storage', 'Profiles', 'Destinations'],
+      log: 'Request and regulation recorded',
+      label:
+        'One deletion request is applied to event storage, profiles and destinations, and the request and its regulation are recorded.',
+    },
+    note: 'Bootstrap Data provides tools to help you act on privacy requests. Compliance with each regulation remains your responsibility.',
+  },
+} as const;
+
+// ---------------------------------------------------------------------------
+// Use cases / personas
+// ---------------------------------------------------------------------------
+
+export const useCases = {
+  eyebrow: 'Who it’s for',
+  heading: 'One governed model for every team that touches customer data.',
+  intro:
+    'Engineering, analytics, privacy and marketing work from the same contracts, rules and consent, so no one has to reconcile them later.',
+  items: [
+    {
+      id: 'platform-eng',
+      icon: 'Code2' as const,
+      role: 'Data platform engineering',
+      headline: 'Replace one-off pipeline fixes with configuration you can review.',
+      outcomes: [
+        'Define contracts once and reuse them across every source.',
+        'Manage configuration from Git and CI with the command-line tool.',
+        'Debug a source live without exposing personal data (early access).',
+        'Deploy in your own cloud with versioned Helm charts.',
+      ],
+    },
+    {
+      id: 'analytics-eng',
+      icon: 'BarChart3' as const,
+      role: 'Analytics engineering',
+      headline: 'Clean, typed data in the warehouse from day one.',
+      outcomes: [
+        'Get typed warehouse tables generated from the tracking plan.',
+        'Stop broken events before they reach your models.',
+        'Keep a raw or typed copy in your own data lake.',
+        'Resolve users across devices into one profile (early access).',
+      ],
+    },
+    {
+      id: 'privacy-gov',
+      icon: 'Lock' as const,
+      role: 'Privacy, security & legal',
+      headline: 'Enforce privacy policy in the pipeline, not in a spreadsheet.',
+      outcomes: [
+        'Block or remove personal data before it leaves intake.',
+        'Make sure tools only receive data their consent allows.',
+        'Handle deletion and suppression requests from one place (early access).',
+        'Review who changed what, and who unmasked sensitive data (early access).',
+      ],
+    },
+    {
+      id: 'growth',
+      icon: 'Megaphone' as const,
+      role: 'Marketing & growth',
+      headline: 'Activate customer data you are allowed to use.',
+      outcomes: [
+        'Send events to Braze, Customer.io, Iterable, Meta, Google and more.',
+        'Map fields to what each tool expects, in the UI.',
+        'Respect consent automatically in every campaign tool.',
+        'Coming next: sync warehouse audiences with Reverse ETL.',
+      ],
+    },
+  ],
+} as const;
+
+// ---------------------------------------------------------------------------
+// FAQ (also emitted as FAQPage structured data)
+// ---------------------------------------------------------------------------
+
+export interface FaqItem {
+  readonly id: string;
+  readonly question: string;
+  readonly answer: string;
+}
+
+export const faq = {
+  eyebrow: 'FAQ',
+  heading: 'Frequently asked questions.',
+  items: [
+    {
+      id: 'what',
+      question: 'What is Bootstrap Data?',
+      answer:
+        'Bootstrap Data is a customer data platform for first-party data. It collects events from your apps and servers, enforces your tracking plan, privacy rules and consent, builds unified profiles (early access), and delivers governed data to your warehouse, data lake and marketing tools.',
+    },
+    {
+      id: 'byoc-vs-cloud',
+      question: 'What is the difference between BYOC and Bootstrap Data Cloud?',
+      answer:
+        'With BYOC (bring your own cloud), the platform runs on Kubernetes inside your own AWS, Google Cloud, Azure or Oracle Cloud account and your customer data stays there. With Bootstrap Data Cloud, we run and upgrade the platform for you. Both include the same features.',
+    },
+    {
+      id: 'byoc-data',
+      question: 'What data leaves my account when I use BYOC?',
+      answer:
+        'Only aggregated usage counts used for billing. They are signed and sent outbound only, over mutually authenticated TLS. Event payloads, logs and personal data stay in your account.',
+    },
+    {
+      id: 'segment',
+      question: 'Can we keep our existing Segment-style tracking?',
+      answer:
+        'Yes. The collection API accepts Segment-compatible calls (track, page, screen, identify, group, alias and batch), so existing instrumentation needs little rework. Talk to us about your migration.',
+    },
+    {
+      id: 'privacy',
+      question: 'Does Bootstrap Data make us compliant with GDPR or CCPA?',
+      answer:
+        'No software can make you compliant on its own. Bootstrap Data gives you the controls: consent-gated delivery, blocking or removing personal data at intake, and deletion and suppression requests (early access) across connected systems with the regulation recorded. Your compliance program decides how to use them.',
+    },
+    {
+      id: 'reverse-etl',
+      question: 'Is Reverse ETL available?',
+      answer:
+        'Not yet. Reverse ETL is in development. We are working with design partners on it now. Contact us if you would like to take part.',
+    },
+    {
+      id: 'status',
+      question: 'What do the “Early access” and “In development” labels mean?',
+      answer:
+        'Available features are part of a released version. Early access features are complete and are rolling out ahead of general availability. In development features are planned but not yet available, and their scope may change.',
+    },
+    {
+      id: 'ai',
+      question: 'Can AI assistants work with Bootstrap Data?',
+      answer:
+        'Yes. A built-in Model Context Protocol (MCP) server lets AI assistants browse your contracts and governance rules and validate sample events. It is read-only by default.',
+    },
+    {
+      id: 'pricing',
+      question: 'How is Bootstrap Data priced?',
+      answer:
+        'Pricing is usage-based for both BYOC and Cloud. Contact us for a quote that fits your volume and deployment model.',
+    },
+  ] satisfies readonly FaqItem[],
+} as const;
+
+// ---------------------------------------------------------------------------
+// CTA section
+// ---------------------------------------------------------------------------
+
+export const ctaSection = {
+  heading: 'See it with your own data.',
+  subhead:
+    'Tell us about your stack, where your data has to live and what you want to activate. We will walk you through the platform on your use case, in BYOC or Cloud.',
+  primary: {
+    label: 'Book a demo',
+    href: demoHref,
+  },
+  secondary: { label: 'Compare BYOC and Cloud', href: '#deployment' },
+  footnote: `Or email us at ${brand.email}.`,
+} as const;
+
+// ---------------------------------------------------------------------------
 // Footer
 // ---------------------------------------------------------------------------
 
 export const footer = {
-  tagline: 'Governance-native control plane for first-party customer data.',
-  links: [
-    { label: 'Decision model', href: '#decision-model' },
-    { label: 'How it works', href: '#how-it-works' },
-    { label: 'Platform', href: '#platform' },
-    { label: 'Use cases', href: '#use-cases' },
+  tagline: 'The governed customer data platform. In your cloud or ours.',
+  groups: [
     {
-      label: 'Request early access',
-      href: earlyAccessHref,
+      label: 'Product',
+      links: [
+        { label: 'Platform', href: '#platform' },
+        { label: 'How it works', href: '#how-it-works' },
+        { label: 'Integrations', href: '#integrations' },
+        { label: 'Reverse ETL', href: '#reverse-etl' },
+      ],
     },
-  ] satisfies readonly NavLink[],
+    {
+      label: 'Evaluate',
+      links: [
+        { label: 'Deployment', href: '#deployment' },
+        { label: 'Security', href: '#security' },
+        { label: 'FAQ', href: '#faq' },
+        { label: 'Book a demo', href: demoHref },
+      ],
+    },
+  ] satisfies readonly { label: string; links: readonly NavLink[] }[],
   legal: `© ${new Date().getFullYear()} Bootstrap Data. All rights reserved.`,
-  disclaimer: 'Capabilities described on this page are in active development. Access is limited.',
+  disclaimer:
+    'Features marked Early access are rolling out ahead of general availability. Features marked In development are not yet available and may change. Product names and logos belong to their respective owners.',
 } as const;
 
 // ---------------------------------------------------------------------------

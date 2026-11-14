@@ -8,6 +8,11 @@ import EventJourney from '@/sections/EventJourney';
 import HowItWorks from '@/sections/HowItWorks';
 import PlatformSection from '@/sections/PlatformSection';
 import UseCases from '@/sections/UseCases';
+import IntegrationsSection from '@/sections/IntegrationsSection';
+import ReverseEtlSection from '@/sections/ReverseEtlSection';
+import DeploymentSection from '@/sections/DeploymentSection';
+import SecuritySection from '@/sections/SecuritySection';
+import FaqSection from '@/sections/FaqSection';
 import AccessCta from '@/sections/AccessCta';
 import { useReveal } from '@/lib/useReveal';
 import { useScrollProgress } from '@/lib/useScrollProgress';
@@ -32,11 +37,16 @@ export default function App() {
         <HeroSection />
         <TrustStrip />
         <BusinessCase />
+        <PlatformSection />
         <DecisionModel />
         <EventJourney />
         <HowItWorks />
-        <PlatformSection />
+        <IntegrationsSection />
+        <ReverseEtlSection />
+        <DeploymentSection />
+        <SecuritySection />
         <UseCases />
+        <FaqSection />
         <AccessCta />
       </main>
 

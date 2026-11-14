@@ -1,7 +1,7 @@
-import { BarChart3, Code2, Lock } from 'lucide-react';
+import { BarChart3, Code2, Lock, Megaphone } from 'lucide-react';
 import { useCases } from '@/content/site';
 
-const ICON_MAP = { BarChart3, Code2, Lock } as const;
+const ICON_MAP = { BarChart3, Code2, Lock, Megaphone } as const;
 type IconName = keyof typeof ICON_MAP;
 
 export default function UseCases() {
@@ -27,7 +27,7 @@ export default function UseCases() {
               <article key={uc.id} className="use-case-card" data-spotlight>
                 <div className="use-case-card__header">
                   <div className="use-case-card__icon" aria-hidden="true">
-                    <Icon size={20} />
+                    <Icon size={20} strokeWidth={1.75} />
                   </div>
                   <p className="use-case-card__role">{uc.role}</p>
                 </div>
