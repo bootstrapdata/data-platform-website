@@ -12,7 +12,6 @@ import {
   SiGooglecloudstorage,
   SiHelm,
   SiJavascript,
-  SiKubernetes,
   SiMeta,
   SiMixpanel,
   SiOpenid,
@@ -22,12 +21,14 @@ import {
 import {
   PiBellRingingFill,
   PiChartLineUpFill,
+  PiCloudFill,
   PiEnvelopeSimpleFill,
   PiPaperPlaneTiltFill,
 } from 'react-icons/pi';
 import { RiAmazonFill } from 'react-icons/ri';
 import { TbApi, TbBrandAzure, TbWebhook } from 'react-icons/tb';
 import { integrations, type IntegrationLogo } from '@/content/site';
+import StatusBadge from '@/components/StatusBadge';
 
 // Brand marks where an open icon set provides one. Vendors without an open mark
 // get a neutral category glyph rather than an imitation of their logo.
@@ -50,8 +51,7 @@ const LOGOS: Record<IntegrationLogo, { Icon: IconType; color: string }> = {
   Webhook: { Icon: TbWebhook, color: 'var(--site-cyan)' },
   AWS: { Icon: RiAmazonFill, color: '#FF9900' },
   S3: { Icon: RiAmazonFill, color: '#FF9900' },
-  Oracle: { Icon: SiKubernetes, color: '#326CE5' },
-  Kubernetes: { Icon: SiKubernetes, color: '#326CE5' },
+  Oracle: { Icon: PiCloudFill, color: NEUTRAL },
   Amplitude: { Icon: PiChartLineUpFill, color: NEUTRAL },
   Braze: { Icon: PiPaperPlaneTiltFill, color: NEUTRAL },
   'Customer.io': { Icon: PiEnvelopeSimpleFill, color: NEUTRAL },
@@ -102,6 +102,7 @@ export default function IntegrationsSection() {
                   <li key={item.name} className="integ-chip">
                     <Logo logo={item.logo} />
                     <span className="integ-chip__name">{item.name}</span>
+                    {'status' in item && item.status && <StatusBadge status={item.status} />}
                   </li>
                 ))}
               </ul>

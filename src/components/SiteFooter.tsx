@@ -44,7 +44,10 @@ export default function SiteFooter() {
       {/* Bottom bar */}
       <div className="site-footer__bar">
         <div className="site-container site-footer__bar-inner">
-          <p className="site-footer__legal">{footer.legal}</p>
+          {/* The year is computed at load, so a page built last year may differ on hydration. */}
+          <p className="site-footer__legal" suppressHydrationWarning>
+            {footer.legal}
+          </p>
           <a href={`mailto:${brand.email}`} className="site-footer__contact">
             {brand.email}
           </a>

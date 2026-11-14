@@ -197,7 +197,7 @@ export const businessNarrative = {
       },
       {
         id: 'privacy-requests',
-        text: 'Deletion and suppression requests reach every connected store and tool from one place.',
+        text: 'Deletion and suppression requests (early access) reach every connected store and tool from one place.',
       },
       {
         id: 'byoc',
@@ -237,7 +237,7 @@ export const platform = {
   eyebrow: 'Platform',
   heading: 'One platform for the whole customer data lifecycle.',
   subhead:
-    'Collect events, enforce your rules, build unified profiles and deliver to the tools your teams use, with the same governance at every step.',
+    'Collect events, enforce your rules, build unified profiles (early access) and deliver to the tools your teams use, with the same governance at every step.',
   modules: [
     {
       id: 'collect',
@@ -339,7 +339,7 @@ export const platform = {
       points: [
         'Suppress, delete, or both, by user ID, anonymous ID, email or phone',
         'Erasure across warehouses, lakes, profiles and destinations, with status tracking and manual sign-off where a tool has no deletion API',
-        'Record the legal basis: GDPR, CCPA, CPRA, LGPD or India’s DPDP Act',
+        'Record the regulation behind each request: GDPR, CCPA, CPRA, LGPD or India’s DPDP Act',
       ],
       status: 'early-access',
     },
@@ -400,7 +400,8 @@ export const decisionModel = {
       verdict: 'BLOCK' as DecisionVerdict,
       headline: 'Stop at the door',
       body: 'Unplanned events, schema violations or sensitive data your policy forbids stop at intake. Nothing reaches downstream tools.',
-      detail: 'Use the source debugger to see why an event was blocked and fix it at the source.',
+      detail:
+        'Use the source debugger (early access) to see why an event was blocked and fix it at the source.',
       snippet: 'decision: BLOCK\nreason: unplanned_event',
     },
     {
@@ -483,7 +484,8 @@ export const howItWorks = {
       label: 'Audit',
       headline: 'Every change, attributable.',
       body: 'Configuration history shows who changed which rule and when. Access is controlled by role, and sensitive actions are restricted and logged.',
-      technical: 'Change history on every configuration item. Role-based permissions with single sign-on.',
+      technical:
+        'Change history on every configuration item. Role-based permissions with single sign-on (early access).',
       snippet:
         'policy.version: 14\nchange: propagation_rule.updated\nactor: data-platform-team\ntimestamp: 2026-06-12T09:14:22Z',
     },
@@ -558,7 +560,6 @@ export type IntegrationLogo =
   | 'AWS'
   | 'GoogleCloud'
   | 'Oracle'
-  | 'Kubernetes'
   | 'Helm'
   | 'Argo'
   | 'Flux'
@@ -567,6 +568,7 @@ export type IntegrationLogo =
 export interface IntegrationItem {
   readonly name: string;
   readonly logo: IntegrationLogo;
+  readonly status?: FeatureStatus;
 }
 
 export interface IntegrationGroup {
@@ -641,7 +643,7 @@ export const integrations = {
         { name: 'Helm', logo: 'Helm' },
         { name: 'Argo CD', logo: 'Argo' },
         { name: 'Flux', logo: 'Flux' },
-        { name: 'OpenID Connect SSO', logo: 'OpenID' },
+        { name: 'OpenID Connect SSO', logo: 'OpenID', status: 'early-access' },
       ],
     },
   ] satisfies readonly IntegrationGroup[],
@@ -669,6 +671,21 @@ export const reverseEtl = {
     via: 'Governed sync',
     to: { label: 'Your tools', items: ['Braze', 'Customer.io', 'Iterable', 'Webhook', 'and more'] },
   },
+  diagram: {
+    title: 'How a governed sync is designed to work',
+    caption: 'Illustration of planned behaviour with sample records. Reverse ETL is in development.',
+    model: 'high_value_customers',
+    modelLabel: 'Warehouse model',
+    rows: [
+      { id: 'cus_1042', trait: 'Pro · high LTV', outcome: 'synced', note: 'Updated' },
+      { id: 'cus_2210', trait: 'Pro · high LTV', outcome: 'skipped', note: 'Suppressed' },
+      { id: 'cus_3381', trait: 'Team · mid LTV', outcome: 'skipped', note: 'No change' },
+      { id: 'cus_4517', trait: 'Pro · high LTV', outcome: 'synced', note: 'Added' },
+    ],
+    checks: ['Consent', 'Suppression', 'Changed since last run'],
+    summary: '2 delivered and confirmed, 2 skipped',
+    replay: 'Replay',
+  },
   features: [
     {
       id: 'confirmed-delivery',
@@ -683,22 +700,22 @@ export const reverseEtl = {
     {
       id: 'governed',
       title: 'Same privacy rules',
-      text: 'The suppression and consent checks used for events also apply before any synced record is sent.',
+      text: 'Designed to apply the same suppression and consent checks used for events before any synced record is sent.',
     },
     {
       id: 'efficient',
       title: 'Only what changed',
-      text: 'Changes are tracked on mapped columns only, and runs are skipped when the source data hasn’t changed.',
+      text: 'Designed to track changes on mapped columns only and skip runs when the source data hasn’t changed.',
     },
     {
       id: 'safe-rollout',
       title: 'Preview before you sync',
-      text: 'Dry runs, primary-key checks and re-baselining let you test a sync before it touches production.',
+      text: 'Planned dry runs, primary-key checks and re-baselining let you test a sync before it touches production.',
     },
     {
       id: 'scheduling',
       title: 'Runs on your schedule',
-      text: 'Intervals, cron with time zones, API triggers, or after your dbt Cloud, Airflow, Dagster or GitHub Actions jobs finish.',
+      text: 'Planned triggers: intervals, cron with time zones, API calls, or after your dbt Cloud, Airflow, Dagster or GitHub Actions jobs finish.',
     },
   ] satisfies readonly RetlFeature[],
   modes: ['Add', 'Update', 'Upsert', 'Delete', 'Mirror', 'List add / remove'],
@@ -731,6 +748,8 @@ export interface ChooserQuestion {
   /** Optional: which option a "no" answer points to, and why. */
   readonly no?: DeploymentId;
   readonly noReason?: string;
+  /** A "yes" is a hard requirement: it decides the recommendation on its own. */
+  readonly decisive?: boolean;
 }
 
 export const deployment = {
@@ -762,12 +781,33 @@ export const deployment = {
       points: [
         'We run, monitor and upgrade the platform for you',
         'The same contracts, privacy rules, consent checks and connectors',
-        'Single sign-on and role-based access',
+        'Single sign-on and role-based access (early access)',
         'Configuration exports as code, so you can move to BYOC later',
         'Talk to us about hosting regions and data residency',
       ],
     },
   ] satisfies readonly DeploymentOption[],
+  visual: {
+    apps: 'Your apps',
+    platform: 'Bootstrap Data',
+    destinations: 'Your warehouse & tools',
+    byoc: {
+      boundary: 'Your cloud account',
+      external: 'Bootstrap Data billing',
+      link: 'Usage counts only',
+      foot: 'Event data, logs and personal data stay inside',
+      label:
+        'BYOC: your apps, Bootstrap Data and your warehouse and tools all run inside your cloud account. Only usage counts leave it, for billing.',
+    },
+    cloud: {
+      boundary: 'Bootstrap Data Cloud',
+      external: 'Bootstrap Data team',
+      link: 'Runs, monitors, upgrades',
+      foot: 'Same contracts, privacy rules and consent checks',
+      label:
+        'Bootstrap Data Cloud: your apps send events to Bootstrap Data, which we run, monitor and upgrade, and it delivers to your warehouse and tools.',
+    },
+  },
   chooser: {
     heading: 'Not sure which fits?',
     intro: 'Answer three questions for a starting recommendation.',
@@ -777,6 +817,7 @@ export const deployment = {
         question: 'Must customer data stay inside your own cloud account?',
         yes: 'byoc',
         reason: 'customer data has to stay in your own account',
+        decisive: true,
       },
       {
         id: 'kubernetes',
@@ -794,6 +835,7 @@ export const deployment = {
       },
     ] satisfies readonly ChooserQuestion[],
     empty: 'Answer the questions to see a recommendation.',
+    incomplete: 'Answer the remaining questions to see a recommendation.',
     tie: 'Either could work. You can start in our cloud and move to BYOC later, since configuration exports as code. Let’s talk it through.',
   },
   billing: {
@@ -839,7 +881,7 @@ export const security = {
       id: 'break-glass',
       icon: 'KeyRound',
       title: 'Sensitive actions locked down',
-      text: 'Revealing stored connection secrets needs a break-glass role. Unmasking personal data in the debugger is limited to privacy officers, and every reveal is logged.',
+      text: 'Stored connection secrets are never shown back, even to administrators. Unmasking personal data in the debugger is limited to privacy officers and an emergency break-glass role, and every reveal is logged.',
       status: 'early-access',
     },
     {
@@ -853,7 +895,7 @@ export const security = {
       id: 'secrets',
       icon: 'Lock',
       title: 'Credentials and identifiers protected',
-      text: 'Connection credentials are encrypted at rest, write-only and never returned by the API. Profile identifiers are stored only as keyed hashes.',
+      text: 'Connection credentials are encrypted at rest, write-only and never returned by the API. With unified profiles (early access), identifiers are stored only as keyed hashes.',
       status: 'available',
     },
     {
@@ -876,6 +918,15 @@ export const security = {
     title: 'Privacy requests across the stack',
     text: 'Suppress or delete a person’s data across storage, profiles and destinations, and record the regulation behind each request.',
     regulations: ['GDPR', 'CCPA', 'CPRA', 'LGPD', 'DPDP Act'],
+    regulationsLabel: 'Regulations you can record',
+    diagram: {
+      request: 'Deletion request',
+      basis: 'Regulation: GDPR',
+      targets: ['Event storage', 'Profiles', 'Destinations'],
+      log: 'Request and regulation recorded',
+      label:
+        'One deletion request is applied to event storage, profiles and destinations, and the request and its regulation are recorded.',
+    },
     note: 'Bootstrap Data provides tools to help you act on privacy requests. Compliance with each regulation remains your responsibility.',
   },
 } as const;
@@ -898,7 +949,7 @@ export const useCases = {
       outcomes: [
         'Define contracts once and reuse them across every source.',
         'Manage configuration from Git and CI with the command-line tool.',
-        'Debug a source live without exposing personal data.',
+        'Debug a source live without exposing personal data (early access).',
         'Deploy in your own cloud with versioned Helm charts.',
       ],
     },
@@ -922,8 +973,8 @@ export const useCases = {
       outcomes: [
         'Block or remove personal data before it leaves intake.',
         'Make sure tools only receive data their consent allows.',
-        'Handle deletion and suppression requests from one place.',
-        'Review who changed what, and who saw sensitive data.',
+        'Handle deletion and suppression requests from one place (early access).',
+        'Review who changed what, and who unmasked sensitive data (early access).',
       ],
     },
     {
@@ -959,7 +1010,7 @@ export const faq = {
       id: 'what',
       question: 'What is Bootstrap Data?',
       answer:
-        'Bootstrap Data is a customer data platform for first-party data. It collects events from your apps and servers, enforces your tracking plan, privacy rules and consent, builds unified profiles, and delivers governed data to your warehouse, data lake and marketing tools.',
+        'Bootstrap Data is a customer data platform for first-party data. It collects events from your apps and servers, enforces your tracking plan, privacy rules and consent, builds unified profiles (early access), and delivers governed data to your warehouse, data lake and marketing tools.',
     },
     {
       id: 'byoc-vs-cloud',
@@ -983,7 +1034,7 @@ export const faq = {
       id: 'privacy',
       question: 'Does Bootstrap Data make us compliant with GDPR or CCPA?',
       answer:
-        'No software can make you compliant on its own. Bootstrap Data gives you the controls: consent-gated delivery, blocking or removing personal data at intake, and deletion and suppression requests across connected systems with the legal basis recorded. Your compliance program decides how to use them.',
+        'No software can make you compliant on its own. Bootstrap Data gives you the controls: consent-gated delivery, blocking or removing personal data at intake, and deletion and suppression requests (early access) across connected systems with the regulation recorded. Your compliance program decides how to use them.',
     },
     {
       id: 'reverse-etl',

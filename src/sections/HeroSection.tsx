@@ -4,7 +4,7 @@ import PolicyEvaluator from '@/evaluator/PolicyEvaluator';
 
 /** Wraps `accent` in a gradient span, keeping the rest of the headline intact. */
 function renderHeadline(text: string, accent: string) {
-  const idx = text.toLowerCase().indexOf(accent);
+  const idx = text.toLowerCase().indexOf(accent.toLowerCase());
   if (idx === -1) return text;
   return (
     <>

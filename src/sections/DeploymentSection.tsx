@@ -1,11 +1,97 @@
 import { useId, useState } from 'react';
-import { ArrowRight, Check, Cloud, Server } from 'lucide-react';
+import {
+  AppWindow,
+  ArrowRight,
+  Check,
+  Cloud,
+  Receipt,
+  Server,
+  Warehouse,
+  Wrench,
+  type LucideIcon,
+} from 'lucide-react';
+import logoMark from '@bootstrapdata/design-system/assets/logo-mark.svg';
 import { deployment, demoHref, type DeploymentId } from '@/content/site';
 import StatusBadge from '@/components/StatusBadge';
+import FlowLink from '@/components/FlowLink';
 
 const OPTION_ICONS = { Server, Cloud } as const;
 
 type Answer = 'yes' | 'no';
+
+function Unit({
+  icon: Icon,
+  label,
+  variant,
+}: {
+  icon?: LucideIcon;
+  label: string;
+  variant?: 'brand' | 'ghost';
+}) {
+  return (
+    <div className={`dg-unit${variant ? ` dg-unit--${variant}` : ''}`}>
+      <span className="dg-unit__icon">
+        {Icon ? <Icon size={20} strokeWidth={1.75} /> : <img src={logoMark} alt="" width={24} height={24} />}
+      </span>
+      <span className="dg-unit__label">{label}</span>
+    </div>
+  );
+}
+
+/** Where each deployment option runs, and what crosses the account boundary. */
+function DeploymentVisual({ id }: { id: DeploymentId }) {
+  const v = deployment.visual;
+  const copy = v[id];
+
+  if (id === 'byoc') {
+    return (
+      <figure className="dg deploy-visual" role="img" aria-label={copy.label}>
+        <div className="deploy-visual__top">
+          <Unit icon={Receipt} label={copy.external} variant="ghost" />
+          <FlowLink
+            direction="up"
+            tone="muted"
+            label={copy.link}
+            packets={[2.8]}
+            className="deploy-visual__uplink"
+          />
+        </div>
+        <div className="dg-boundary">
+          <span className="dg-boundary__label">{copy.boundary}</span>
+          <div className="dg-flow dg-stack">
+            <Unit icon={AppWindow} label={v.apps} />
+            <FlowLink packets={[0.2, 0.9, 1.6]} />
+            <Unit label={v.platform} variant="brand" />
+            <FlowLink packets={[0.75, 1.45, 2.15]} />
+            <Unit icon={Warehouse} label={v.destinations} />
+          </div>
+          <p className="dg-boundary__foot">{copy.foot}</p>
+        </div>
+      </figure>
+    );
+  }
+
+  return (
+    <figure className="dg deploy-visual" role="img" aria-label={copy.label}>
+      <div className="deploy-visual__top deploy-visual__top--ops">
+        <Unit icon={Wrench} label={copy.external} variant="ghost" />
+        <FlowLink direction="down" label={copy.link} packets={[0.2]} className="deploy-visual__downlink" />
+      </div>
+      <div className="dg-flow dg-stack deploy-visual__row">
+        <Unit icon={AppWindow} label={v.apps} />
+        <FlowLink packets={[0.7, 1.4, 2.1]} />
+        <div className="dg-boundary dg-boundary--brand deploy-visual__managed">
+          <span className="dg-boundary__label">{copy.boundary}</span>
+          <Unit label={v.platform} variant="brand" />
+          <span className="deploy-visual__ops-note">{copy.link}</span>
+        </div>
+        <FlowLink packets={[1.25, 1.95, 2.65]} />
+        <Unit icon={Warehouse} label={v.destinations} />
+      </div>
+      <p className="dg-boundary__foot">{copy.foot}</p>
+    </figure>
+  );
+}
 
 function tally(answers: Record<string, Answer>) {
   const votes: Record<DeploymentId, string[]> = { byoc: [], cloud: [] };
@@ -18,14 +104,18 @@ function tally(answers: Record<string, Answer>) {
 }
 
 function Chooser() {
-  const { heading, intro, questions, empty, tie } = deployment.chooser;
+  const { heading, intro, questions, empty, incomplete, tie } = deployment.chooser;
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const baseId = useId();
 
   const votes = tally(answers);
   const answered = Object.keys(answers).length;
-  const pick: DeploymentId | null =
+  const complete = answered === questions.length;
+  const majority: DeploymentId | null =
     votes.byoc.length > votes.cloud.length ? 'byoc' : votes.cloud.length > votes.byoc.length ? 'cloud' : null;
+  // A hard requirement (e.g. data must stay in your account) overrides the other answers.
+  const required = questions.find((q) => 'decisive' in q && q.decisive && answers[q.id] === 'yes');
+  const pick: DeploymentId | null = required ? required.yes : complete ? majority : null;
   const picked = pick ? deployment.options.find((o) => o.id === pick) : undefined;
 
   return (
@@ -80,7 +170,7 @@ function Chooser() {
             <p className="deploy-result__why">Because {votes[picked.id].join(', and ')}.</p>
           </>
         ) : (
-          <p className="deploy-result__empty">{tie}</p>
+          <p className="deploy-result__empty">{complete ? tie : incomplete}</p>
         )}
         {answered > 0 && (
           <div className="deploy-result__actions">
@@ -126,6 +216,7 @@ export default function DeploymentSection() {
                     <p className="deploy-card__tagline">{opt.tagline}</p>
                   </div>
                 </div>
+                <DeploymentVisual id={opt.id} />
                 <ul className="deploy-card__points" role="list">
                   {opt.points.map((pt) => (
                     <li key={pt}>
