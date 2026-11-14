@@ -1,7 +1,7 @@
-import { GitBranch, ShieldCheck, Waypoints, History, type LucideIcon } from 'lucide-react';
+import { Cloud, ShieldCheck, Waypoints, History, type LucideIcon } from 'lucide-react';
 import { trustStrip } from '@/content/site';
 
-const icons: Record<string, LucideIcon> = { GitBranch, ShieldCheck, Waypoints, History };
+const icons: Record<string, LucideIcon> = { Cloud, ShieldCheck, Waypoints, History };
 
 export default function TrustStrip() {
   return (
@@ -17,7 +17,7 @@ export default function TrustStrip() {
             return (
               <li key={pillar.id} className="trust-pillar">
                 <span className="trust-pillar__icon" aria-hidden="true">
-                  <Icon size={18} strokeWidth={2} />
+                  <Icon size={20} strokeWidth={1.75} />
                 </span>
                 <span className="trust-pillar__body">
                   <span className="trust-pillar__title">{pillar.title}</span>

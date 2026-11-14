@@ -53,11 +53,7 @@ export default function SiteHeader() {
               const isActive = link.href === `#${activeId}`;
               return (
                 <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="site-nav__link"
-                    aria-current={isActive ? 'true' : undefined}
-                  >
+                  <a href={link.href} className="site-nav__link" aria-current={isActive ? 'true' : undefined}>
                     {link.label}
                   </a>
                 </li>

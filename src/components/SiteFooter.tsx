@@ -24,15 +24,20 @@ export default function SiteFooter() {
 
         {/* Links */}
         <nav className="site-footer__nav" aria-label="Footer navigation">
-          <ul className="site-footer__links" role="list">
-            {footer.links.map((link) => (
-              <li key={link.label}>
-                <a href={link.href} className="site-footer__link">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          {footer.groups.map((group) => (
+            <div key={group.label} className="site-footer__group">
+              <p className="site-footer__group-label">{group.label}</p>
+              <ul className="site-footer__links" role="list">
+                {group.links.map((link) => (
+                  <li key={link.label}>
+                    <a href={link.href} className="site-footer__link">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
       </div>
 
