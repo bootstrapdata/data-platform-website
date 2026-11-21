@@ -18,19 +18,28 @@
 ## Tech stack
 
 - **Vite + React 19 + TypeScript** — builds to fully static assets.
-- **Tailwind CSS v4** + **[`@bootstrapdata/design-system`](https://github.com/bootstrapdata)**
-  — the shared shadcn/ui (Radix) component library, brand theme, and assets.
+- **Tailwind CSS v4** + **`@bootstrapdata/design-system`** — the shared shadcn/ui
+  (Radix) component library, brand theme, and assets, vendored as a tarball in
+  [`vendor/`](./vendor).
 - **lucide-react** icons; bespoke animated SVGs for the signature diagrams.
 
 ## Local development
 
-The design system is published to **GitHub Packages (private)**, so npm needs a token
-with `read:packages` to install it:
+The design system is vendored in `vendor/`, so no registry token is needed:
 
 ```bash
-export NODE_AUTH_TOKEN=$(gh auth token)   # or a PAT with read:packages
 npm ci
 npm run dev
+```
+
+To update the design system, pack the new version from the internal Gitea npm
+registry (tailnet only), replace the tarball, and point `package.json` at it:
+
+```bash
+npm pack @bootstrapdata/design-system@<version> \
+  --registry https://git.int.metapod.in/api/packages/bootstrapdata/npm/ \
+  --pack-destination vendor/
+npm install
 ```
 
 | Script            | Description                          |
@@ -43,6 +52,5 @@ npm run dev
 ## Deployment
 
 Pushing to `main` triggers [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml),
-which installs (authenticating to GitHub Packages with the built-in `GITHUB_TOKEN`),
-builds, and publishes `dist/` to GitHub Pages. The custom domain is configured via
+which installs, builds, and publishes `dist/` to GitHub Pages. The custom domain is configured via
 [`public/CNAME`](./public/CNAME).
